@@ -60,19 +60,17 @@ namespace DStarLite
 					double cost;
 
 					/**
-					 * @var  unsigned int  x-coordinate
-					 */
-					unsigned int x;
-
-					/**
-					 * @var  unsigned int  y-coordinate
-					 */
-					unsigned int y;
-
-					/**
 					 * Default constructor.
 					 */
 					Cell();
+
+					/**
+					 * Constructor.
+					 *
+					 * @param   unsigned int   x-coordinate
+					 * @param   unsigned int   y-coordinate
+					 */
+					Cell(unsigned int x, unsigned int y);
 
 					/**
 					 * Deconstructor.
@@ -94,6 +92,20 @@ namespace DStarLite
 					 */
 					Cell** nbrs();
 
+					/**
+					 * Get x-coordinate.
+					 *
+					 * @return  unsigned int
+					 */
+					unsigned int x();
+
+					/**
+					 * Get y-coordinate.
+					 *
+					 * @return  unsigned int
+					 */
+					unsigned int y();
+
 				protected:
 
 					/**
@@ -105,6 +117,16 @@ namespace DStarLite
 					 * @var  Cell**  neighbors
 					 */
 					Cell** _nbrs;
+
+					/**
+					 * @var  unsigned int  x-coordinate
+					 */
+					unsigned int _x;
+
+					/**
+					 * @var  unsigned int  y-coordinate
+					 */
+					unsigned int _y;
 			};
 
 			/**
@@ -162,7 +184,7 @@ namespace DStarLite
 			/**
 			 * Number of rows.
 			 *
-			 * @return  int
+			 * @return  unsigned int
 			 */
 			unsigned int rows();
 

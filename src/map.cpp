@@ -26,52 +26,6 @@ const double Map::Cell::COST_UNWALKABLE = 100.0;
 const int Map::Cell::CellHash::C = 1000000;
 
 /**
- * Builds a map based on a bitmap.
- *
- * @param   Bitmap*   bitmap
- * @return  Map*
- */
-/*Map* Map::factory(Bitmap* bitmap)
-{
-	unsigned int rows = bitmap->height();
-	unsigned int cols = bitmap->width();
-
-	Map* map = new Map(rows, cols);
-
-	unsigned char** data = new unsigned char*[rows];
-	for (unsigned int i = 0; i < rows; i++)
-	{
-		data[i] = new unsigned char[cols];
-	}
-
-	bitmap->as_array(data);
-
-	for (unsigned int i = 0; i < rows; i++)
-	{
-		for (unsigned int j = 0; j < cols; j++)
-		{
-			if (data[i][j] == Bitmap::MIN_VALUE)
-			{
-				(*map)(i, j)->cost = Cell::COST_UNWALKABLE;
-			}
-			else
-			{
-				(*map)(i, j)->cost = (double) Bitmap::MAX_VALUE - data[i][j] + 1.0;
-			}
-		}
-	}
-
-	for (unsigned int i = 0; i < rows; i++)
-	{
-		delete[] data[i];
-	}
-
-	delete[] data;
-
-	return map;
-}*/
-
-/**
  * Default Constructor.
  */
 Map::Map()
@@ -101,7 +55,7 @@ Map::Map(unsigned int rows, unsigned int cols)
 
 		for (unsigned int j = 0; j < cols; j++)
 		{
-			_cells[i][j] = new Cell();
+			_cells[i][j] = new Cell(j, i);
 		}
 	}
 
@@ -223,18 +177,18 @@ unsigned int Map::cols()
  */
 bool Map::grazes(Cell* a, Cell* b)
 {
-	int dx = b->x - a->x;
-	int dy = b->y - a->y;
+	int dx = b->x() - a->x();
+	int dy = b->y() - a->y();
 
 	// Not considered grazing if not a diagonal move
 	if ((abs(dx) + abs(dy)) == 1)
 		return false;
 
 	// Verify that it is in the bounds of the map
-	if ( ( ! has(a->y, a->x + dx)) ||  ( ! has(a->y + dy, a->x)))
+	if ( ( ! has(a->y(), a->x() + dx)) ||  ( ! has(a->y() + dy, a->x())))
 		return true;
 
-	return (_cells[a->y][a->x + dx]->cost == Cell::COST_UNWALKABLE || _cells[a->y + dy][a->x]->cost == Cell::COST_UNWALKABLE);
+	return (_cells[a->y()][a->x() + dx]->cost == Cell::COST_UNWALKABLE || _cells[a->y() + dy][a->x()]->cost == Cell::COST_UNWALKABLE);
 }
 
 /**
@@ -259,18 +213,50 @@ unsigned int Map::rows()
 	return _rows;
 }
 
+/**
+ * Default constructor.
+ */
 Map::Cell::Cell()
 {
 	_init = false;
+
 	_nbrs = NULL;
+
+	_x = 0;
+	_y = 0;
 }
 
+/**
+ * Constructor.
+ *
+ * @param   unsigned int   x-coordinate
+ * @param   unsigned int   y-coordinate
+ */				
+Map::Cell::Cell(unsigned int x, unsigned int y)
+{
+	_init = false;
+
+	_nbrs = NULL;
+
+	_x = x;
+	_y = y;
+}
+
+/**
+ * Deconstructor.
+ */
 Map::Cell::~Cell()
 {
 	if (_nbrs != NULL)
 		delete[] _nbrs;
 }
 
+/**
+ * Initialize.
+ *
+ * @param   Cell**  cell neighbors
+ * @return  void
+ */
 void Map::Cell::init(Cell** nbrs)
 {
 	if (_init)
@@ -279,4 +265,24 @@ void Map::Cell::init(Cell** nbrs)
 	_init = true;
 
 	_nbrs = nbrs;
+}
+
+/**
+ * Get x-coordinate.
+ *
+ * @return  unsigned int
+ */
+unsigned int Map::Cell::x()
+{
+	return _x;
+}
+
+/**
+ * Get y-coordinate.
+ *
+ * @return  unsigned int
+ */
+unsigned int Map::Cell::y()
+{
+	return _y;
 }
