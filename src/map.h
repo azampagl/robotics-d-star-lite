@@ -60,11 +60,6 @@ namespace DStarLite
 					double cost;
 
 					/**
-					 * Default constructor.
-					 */
-					Cell();
-
-					/**
 					 * Constructor.
 					 *
 					 * @param   unsigned int   x-coordinate

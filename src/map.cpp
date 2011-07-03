@@ -214,19 +214,6 @@ unsigned int Map::rows()
 }
 
 /**
- * Default constructor.
- */
-Map::Cell::Cell()
-{
-	_init = false;
-
-	_nbrs = NULL;
-
-	_x = 0;
-	_y = 0;
-}
-
-/**
  * Constructor.
  *
  * @param   unsigned int   x-coordinate
@@ -295,5 +282,5 @@ unsigned int Map::Cell::y()
  */
 size_t Map::Cell::Hash::operator()(Cell* c) const
 {
-	return c->x() + Cell::Hash::C * c->y();
+	return Cell::Hash::C * c->y() + c->x();
 }
