@@ -26,7 +26,7 @@ namespace DStarLite
 					/**
 					 * Hash
 					 */
-					class CellHash : public unary_function<Cell*, size_t>
+					class Hash : public unary_function<Cell*, size_t>
 					{
 						public:
 
