@@ -255,6 +255,16 @@ void Map::Cell::init(Cell** nbrs)
 }
 
 /**
+ * Get cell neighbors.
+ *
+ * @return  Cell**
+ */
+Map::Cell** Map::Cell::nbrs()
+{
+	return _nbrs;
+}
+
+/**
  * Get x-coordinate.
  *
  * @return  unsigned int

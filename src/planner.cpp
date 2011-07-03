@@ -29,15 +29,11 @@ Planner::Planner(Map* map, Map::Cell* start, Map::Cell* goal)
 	_map = map;
 	_start = start;
 	_goal = goal;
-	_last = _start;
+	//_last = _start;
 
-	_g(_start, Math::INFINITY);
-	_rhs(_start, 0.0);
+	_rhs(_goal, 0.0);
 
-	_g(_goal, Math::INFINITY);
-	_rhs(_goal, Math::INFINITY);
-
-	_list_insert(_start, _k(_start));
+	_list_insert(_goal, _k(_goal));
 }
 
 /**
@@ -165,8 +161,8 @@ void Planner::update(Map::Cell* u, double cost)
 		return;
 
 	// Update km
-	_km += _h(_last, _start);
-	_last = _start;
+	//_km += _h(_last, _start);
+	//_last = _start;
 
 	_cell(u);
 	u->cost = cost;
@@ -194,13 +190,17 @@ bool Planner::_compute()
 	if (_open_list.empty())
 		return false;
 
+	KeyCompare key_compare;
+
 	Map::Cell* u;
+	Map::Cell** nbrs;
+
 	pair<double,double> k_old;
 	pair<double,double> k_new;
 
 	int attempts = 0;
 
-	while (((! _open_list.empty()) && (_open_list.begin()->first < _k(_start))) || (_rhs(_start) != _g(_start)))
+	while ( ! _open_list.empty() && _open_list.begin()->first < _k(_start) || ! Math::equals(_rhs(_start), _g(_start)))
 	{
 		// Reached max steps, quit
 		if (++attempts > Planner::MAX_STEPS)
@@ -209,6 +209,36 @@ bool Planner::_compute()
 		u = _open_list.begin()->second;
 		k_old = _open_list.begin()->first;
 		k_new = _k(u);
+
+		_list_remove(u);
+		
+		if (key_compare(k_old, k_new))
+		{
+			_list_insert(u, k_new);
+		}
+		else
+		{
+			if(Math::greater(_g(u), _rhs(u)))
+			{
+				_g(u, _rhs(u));
+			}
+			else
+			{
+				_g(u, Math::INFINITY);
+
+				_update(u);
+			}
+
+			nbrs = u->nbrs();
+
+			for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+			{
+				if (nbrs[i] != NULL)
+				{
+					_update(nbrs[i]);
+				}
+			}
+		}
 	}
 
 	return 0;
@@ -263,8 +293,10 @@ double Planner::_h(Map::Cell* a, Map::Cell* b)
  */
 pair<double,double> Planner::_k(Map::Cell* u)
 {
-	double min_c = min(_g(u), _rhs(u));
-	return pair<double,double>((min_c + _h(_start, u) + _km), min_c);
+	double g = _g(u);
+	double rhs = _rhs(u);
+	double min = Math::less(g, rhs) ? g : rhs;
+	return pair<double,double>((min + _h(_start, u) + _km), min);
 }
 
 /**
@@ -309,11 +341,40 @@ double Planner::_rhs(Map::Cell* u, double value)
  */
 void Planner::_update(Map::Cell* u)
 {
+	if (u != _goal)
+	{
+		Map::Cell** nbrs = u->nbrs();
+
+		double tmp;
+		double min = Math::INFINITY;
+
+		for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+		{
+			if (nbrs[i] != NULL)
+			{
+				tmp = _g(nbrs[i]);
+
+				if (Math::equals(tmp, Math::INFINITY))
+					continue;
+
+				tmp += _cost(u, nbrs[i]);
+
+				if (Math::less(tmp, min))
+				{
+					min = tmp;
+				}
+			}
+		}
+
+		_rhs(u, min);
+	}
+
 	if (_open_hash.find(u) != _open_hash.end())
 	{
 		_list_remove(u);
 	}
-	if (_g(u) != _rhs(u))
+
+	if ( ! Math::equals(_g(u), _rhs(u)))
 	{
 		_list_insert(u, _k(u));
 	}
@@ -324,9 +385,9 @@ void Planner::_update(Map::Cell* u)
  */
 bool Planner::KeyCompare::operator()(const pair<double,double>& p1, const pair<double,double>& p2) const
 {
-	if (p1.first + 0.000000001 < p2.first) return true;
-	else if (p1.first - 0.000000001 > p2.first) return false;
-	else if (p1.second + 0.000000001 < p2.second) return true;
-	else if (p1.second - 0.000000001 > p2.second) return false;
-	return false;
+	if (Math::less(p1.first, p2.first))				return true;
+	else if (Math::greater(p1.first, p2.first))		return false;
+	else if (Math::less(p1.second,  p2.second))		return true;
+	else if (Math::greater(p1.second, p2.second))	return false;
+													return false;
 }

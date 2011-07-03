@@ -114,7 +114,7 @@ namespace DStarLite
 			 */
 			Map::Cell* _start;
 			Map::Cell* _goal;
-			Map::Cell* _last;
+			//Map::Cell* _last;
 
 			/*
 			 * @var  multimap  open list

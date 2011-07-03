@@ -36,16 +36,6 @@ namespace DStarLite
 			static const double SQRT2;
 
 			/**
-			 * Determines if two doubles are close based on a precision.
-			 *
-			 * @param   double              first double
-			 * @param   double              second duble
-			 * @param   double [optional]   precision
-			 * @return  bool
-			 */
-			static bool close(double a, double b, double precision = 0.00001);
-
-			/**
 			 * Convert degrees to radians.
 			 *
 			 * @param   double   degrees
@@ -60,6 +50,38 @@ namespace DStarLite
 			 * @return  double   degrees
 			 */
 			static double deg2signed(double degrees);
+
+			/**
+			 * Determines if two doubles are equal based on a precision.
+			 *
+			 * @param   double              first double
+			 * @param   double              second duble
+			 * @param   double [optional]   precision
+			 * @return  bool
+			 */
+			static bool equals(double a, double b, double precision = 0.0000000001);
+
+			/**
+			 * Determines if a double is greater than compared to another double
+			 * based on a precision.
+			 *
+			 * @param   double              first double
+			 * @param   double              second duble
+			 * @param   double [optional]   precision
+			 * @return  bool
+			 */
+			static bool greater(double a, double b, double precision = 0.0000000001);
+
+			/**
+			 * Determines if a double is less than compared to another double
+			 * based on a precision.
+			 *
+			 * @param   double              first double
+			 * @param   double              second duble
+			 * @param   double [optional]   precision
+			 * @return  bool
+			 */
+			static bool less(double a, double b, double precision = 0.0000000001);
 
 			/**
 			 * Convert radians to degrees.
