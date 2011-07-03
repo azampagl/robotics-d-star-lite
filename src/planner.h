@@ -15,6 +15,7 @@
 #include <map>
 #include <unordered_map>
 #include "map.h"
+#include "math.h"
 
 using namespace std;
 using namespace DStarLite;

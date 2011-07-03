@@ -192,7 +192,7 @@ void Planner::_cell(Map::Cell* u)
 bool Planner::_compute()
 {
 	if (_open_list.empty())
-		return -1;
+		return false;
 
 	Map::Cell* u;
 	pair<double,double> k_old;
@@ -209,35 +209,6 @@ bool Planner::_compute()
 		u = _open_list.begin()->second;
 		k_old = _open_list.begin()->first;
 		k_new = _k(u);
-
-		_list_remove(_open_list.begin()->second);
-
-		if (k_old < k_new)
-		{
-			_list_insert(u, k_new);
-		}
-		else if (_g(u) > _rhs(u))
-		{
-			_g(u, _rhs(u));
-
-			_pred(u, pred);
-			for (i = pred.begin(); i != pred.end(); i++)
-			{
-				_update(*i);
-			}
-		}
-		else
-		{
-			_g(u, Math::INFINITY);
-
-			_pred(u, pred);
-			pred.push_back(u);
-
-			for (i = pred.begin(); i != pred.end(); i++)
-			{
-				_update(*i);
-			}
-		}
 	}
 
 	return 0;
@@ -248,8 +219,8 @@ bool Planner::_compute()
  */
 double Planner::_cost(Map::Cell* a, Map::Cell* b)
 {
-	unsigned int dx = abs(a->x() - b->x());
-	unsigned int dy = abs(a->y() - b->y());
+	unsigned int dx = labs(a->x() - b->x());
+	unsigned int dy = labs(a->y() - b->y());
 	double scale = 1.0;
 
 	if ((dx + dy) > 1)
@@ -281,8 +252,8 @@ double Planner::_g(Map::Cell* u, double value)
  */
 double Planner::_h(Map::Cell* a, Map::Cell* b)
 {
-	int x = a->x() - b->x();
-	int y = a->y() - b->y();
+	double x = a->x() - b->x();
+	double y = a->y() - b->y();
 	
 	return sqrt(x*x + y*y);
 }
@@ -334,32 +305,10 @@ double Planner::_rhs(Map::Cell* u, double value)
 }
 
 /**
- * Updates tile.
  *
- * @param   Tile*
- * @return  void
  */
-/*void DStarLite::_update(Tile* u)
+void Planner::_update(Map::Cell* u)
 {
-	if (u != _goal)
-	{
-		list<Tile*> succ;
-		_succ(u, succ);
-
-		double min_rhs = Math::INFINITY;
-		double rhs;
-		
-		for (list<Tile*>::iterator i = succ.begin(); i != succ.end(); i++)
-		{
-			rhs = _cost(u, *i) + _g(*i);
-			if (min_rhs > rhs)
-			{
-				min_rhs = rhs;
-			}
-		}
-
-		_rhs(u, min_rhs);
-	}
 	if (_open_hash.find(u) != _open_hash.end())
 	{
 		_list_remove(u);
@@ -368,7 +317,7 @@ double Planner::_rhs(Map::Cell* u, double value)
 	{
 		_list_insert(u, _k(u));
 	}
-}*/
+}
 
 /**
  * Key compare function.

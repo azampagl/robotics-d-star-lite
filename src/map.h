@@ -36,12 +36,12 @@ namespace DStarLite
 							static const int C;
 
 							/**
-							 * Hash method.
+							 * Hashes cell based on coordinates.
 							 *
 							 * @param   Cell*
 							 * @return  size_t
 							 */
-							size_t operator()(const Cell* c) const;
+							size_t operator()(Cell* c) const;
 					};
 
 					/*

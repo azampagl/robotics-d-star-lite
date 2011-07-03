@@ -65,10 +65,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\map.cpp" />
+    <ClCompile Include="..\..\..\..\src\math.cpp" />
     <ClCompile Include="..\..\..\..\src\planner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\map.h" />
+    <ClInclude Include="..\..\..\..\src\math.h" />
     <ClInclude Include="..\..\..\..\src\planner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

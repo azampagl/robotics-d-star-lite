@@ -23,7 +23,7 @@ const double Map::Cell::COST_UNWALKABLE = 100.0;
 /**
  * @var  int  hash "constant" (may need to change if large map)
  */
-const int Map::Cell::CellHash::C = 1000000;
+const int Map::Cell::Hash::C = 1000000;
 
 /**
  * Default Constructor.
@@ -285,4 +285,15 @@ unsigned int Map::Cell::x()
 unsigned int Map::Cell::y()
 {
 	return _y;
+}
+
+/**
+ * Hashes cell based on coordinates.
+ *
+ * @param   Cell*
+ * @return  size_t
+ */
+size_t Map::Cell::Hash::operator()(Cell* c) const
+{
+	return c->x() + Cell::Hash::C * c->y();
 }
