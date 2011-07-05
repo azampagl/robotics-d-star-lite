@@ -39,6 +39,9 @@
     <ClCompile Include="..\..\..\..\src\widgets\widget_robot.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\simulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\map.h">
@@ -58,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\widgets\widget_robot.h">
       <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\simulator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
