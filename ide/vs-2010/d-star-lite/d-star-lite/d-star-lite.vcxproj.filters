@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\widgets">
+      <UniqueIdentifier>{45a5ceea-9673-4195-8061-e3d1d26a0a41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\widgets">
+      <UniqueIdentifier>{863fba3d-d52a-46ef-860c-69ea95c502fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\main.cpp">
@@ -27,6 +33,12 @@
     <ClCompile Include="..\..\..\..\src\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\widgets\widget_real.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\widgets\widget_robot.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\map.h">
@@ -37,6 +49,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\math.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\widgets\widget_base.h">
+      <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\widgets\widget_real.h">
+      <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\widgets\widget_robot.h">
+      <Filter>Header Files\widgets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
