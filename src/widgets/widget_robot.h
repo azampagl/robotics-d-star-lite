@@ -17,12 +17,14 @@ namespace DStarLite
 	{
 		public:
 
+			int scan_radius;
+
+			list<Map::Cell*> path_planned;
+
 			/*
 			 * @var  unsigned char*  data
 			 */
-			void draw()
-			{
-			}
+			void draw();
 	};
 };
 

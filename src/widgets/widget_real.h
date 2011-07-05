@@ -17,12 +17,12 @@ namespace DStarLite
 	{
 		public:
 
+			list<Map::Cell*> path_traversed;
+
 			/*
 			 * @var  unsigned char*  data
 			 */
-			void draw()
-			{
-			}
+			void draw();
 	};
 };
 
