@@ -41,6 +41,8 @@ namespace DStarLite
 			 * @var  Map::Cell*  goal position
 			 */
 			Map::Cell* goal;
+
+			BaseWidget(int x, int y, int w, int h) : Fl_Widget(x, y, w, h){}
 	};
 };
 

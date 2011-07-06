@@ -9,6 +9,8 @@
 #ifndef DSTARLITE_SIMULATOR_H
 #define DSTARLITE_SIMULATOR_H
 
+#include <FL/Fl.H>
+#include <FL/FL_BMP_Image.H>
 #include <FL/FL_Window.H>
 
 #include "planner.h"
@@ -30,14 +32,14 @@ namespace DStarLite
 				public:
 
 					/**
-					 * @var  unsigned char*  real map file
+					 * @var  char*  real map file
 					 */
-					unsigned char* bitmap_real;
+					char* bitmap_real;
 
 					/**
-					 * @var  unsigned char*  robot map file
+					 * @var  char*  robot map file
 					 */
-					unsigned char* bitmap_robot;
+					char* bitmap_robot;
 
 					/**
 					 * @var  pair<int,int>  start position
@@ -56,6 +58,21 @@ namespace DStarLite
 			};
 
 			/**
+			 * @var  int  window width padding
+			 */
+			static const int WINDOW_WIDTH_PADDING;
+
+			/**
+			 * @var  int  window height padding
+			 */
+			static const int WINDOW_HEIGHT_PADDING;
+
+			/**
+			 * @var  int  window image padding
+			 */
+			static const int WINDOW_IMG_PADDING;
+
+			/**
 			 * @var  double  cost difference between bitmap and tile
 			 */
 			static const double COST_DIFFERENCE;
@@ -68,10 +85,10 @@ namespace DStarLite
 			/**
 			 * Constructor.
 			 * 
-			 * @param  unsigned char*    name of the simulator
-			 * @param  Config            config options
+			 * @param  char*    name of the simulator
+			 * @param  Config   config options
 			 */
-			Simulator(unsigned char* name, Config confg);
+			Simulator(char* name, Config confg);
 
 			/**
 			 * Deconstructor.
@@ -102,9 +119,9 @@ namespace DStarLite
 		protected:
 
 			/**
-			 * @var  unsigned char*  name of the simulator
+			 * @var  char*  name of the simulator
 			 */
-			unsigned char* _name;
+			char* _name;
 
 			/**
 			 * @var  Config  simulator config options

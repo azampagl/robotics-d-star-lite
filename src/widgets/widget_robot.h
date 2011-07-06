@@ -21,6 +21,8 @@ namespace DStarLite
 
 			list<Map::Cell*> path_planned;
 
+			RobotWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h){}
+
 			/*
 			 * @var  unsigned char*  data
 			 */

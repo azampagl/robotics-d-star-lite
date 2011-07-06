@@ -9,8 +9,8 @@
 #ifndef DSTARLITE_PLANNER_H
 #define DSTARLITE_PLANNER_H
 
-#include <functional>
-#include <algorithm>
+//#include <functional>
+//#include <algorithm>
 #include <list>
 #include <map>
 #include <unordered_map>
