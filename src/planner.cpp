@@ -267,10 +267,17 @@ double Planner::_g(Map::Cell* u, double value)
  */
 double Planner::_h(Map::Cell* a, Map::Cell* b)
 {
-	double x = a->x() - b->x();
-	double y = a->y() - b->y();
+	double min = labs(a->x() - b->x());
+	double max = labs(a->y() - b->y());
 	
-	return sqrt(x*x + y*y);
+	if (min > max)
+	{
+		double tmp = min;
+		min = max;
+		max = tmp;
+	}
+	
+	return ((Math::SQRT2 - 1.0) * min + max);
 }
 
 /**
