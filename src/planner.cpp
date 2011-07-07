@@ -29,7 +29,7 @@ Planner::Planner(Map* map, Map::Cell* start, Map::Cell* goal)
 	_map = map;
 	_start = start;
 	_goal = goal;
-	//_last = _start;
+	_last = _start;
 
 	_rhs(_goal, 0.0);
 
@@ -75,66 +75,51 @@ Map::Cell* Planner::goal(Map::Cell* u)
  *
  * @return  bool   solution found
  */
-/*bool DStarLite::replan()
+bool Planner::replan()
 {
 	_path.clear();
 	
-	int result = _compute();
+	bool result = _compute();
 	
-	if (result < 0)
+	if ( ! result)
 	  return false;
 
-	list<Tile*> succ;
-	list<Tile*>::iterator i;
-	Tile* min_t;
-	double min_cost, min_dist, cost, dist;
+	Map::Cell** nbrs = NULL;
+	Map::Cell* min_cell = NULL;
+	double min_cost, tmp_cost = Math::INFINITY;
 
-	Tile* cur = _start;
+	Map::Cell* current = _start;
+	_path.push_back(current);
 
-	while(cur != _goal)
+	while (current != _goal)
 	{
-		if (_g(cur) == Math::INFINITY)
+		if (Math::equals(_g(current), Math::INFINITY))
 			return false;
 
-		_path.push_back(cur);
+		nbrs = current->nbrs();
+		min_cell = NULL;
+		min_cost = tmp_cost = Math::INFINITY;
 
-		_succ(cur, succ);
-
-		min_t = NULL;
-		min_cost = Math::INFINITY;
-		min_dist = Math::INFINITY;
-		
-		for (i = succ.begin(); i != succ.end(); i++)
+		for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
 		{
-			cost = _cost(cur, *i) + _g(*i);
-			dist = (*i)->euclidean_distance(*_goal) + _start->euclidean_distance(*(*i));
-			if (Math::close(min_cost, cost))
+			if (nbrs[i] != NULL)
 			{
-				if (dist < min_dist)
+				tmp_cost = _cost(current, nbrs[i]) + _g(nbrs[i]);
+
+				if (Math::less(tmp_cost, min_cost))
 				{
-					min_t = *i;
-					min_cost = cost;
-					min_dist = dist;
+					min_cell = nbrs[i];
+					min_cost = tmp_cost;
 				}
-			}
-			else if (cost < min_cost)
-			{
-				min_t = *i;
-				min_cost = cost;
-				min_dist = dist;
 			}
 		}
 
-		if (min_t == NULL)
-			return false;
-
-		cur = min_t;
+		current = min_cell;
+		_path.push_back(current);
 	}
 
-	_path.push_back(_goal);
-
 	return true;
-}*/
+}
 
 /**
  * Gets/Sets a new start.
@@ -161,8 +146,8 @@ void Planner::update(Map::Cell* u, double cost)
 		return;
 
 	// Update km
-	//_km += _h(_last, _start);
-	//_last = _start;
+	_km += _h(_last, _start);
+	_last = _start;
 
 	_cell(u);
 	u->cost = cost;
@@ -218,7 +203,7 @@ bool Planner::_compute()
 		}
 		else
 		{
-			if(Math::greater(_g(u), _rhs(u)))
+			if (Math::greater(_g(u), _rhs(u)))
 			{
 				_g(u, _rhs(u));
 			}
@@ -241,7 +226,7 @@ bool Planner::_compute()
 		}
 	}
 
-	return 0;
+	return true;
 }
 
 /**
@@ -354,10 +339,10 @@ void Planner::_update(Map::Cell* u)
 			{
 				tmp = _g(nbrs[i]);
 
-				if (Math::equals(tmp, Math::INFINITY))
-					continue;
-
-				tmp += _cost(u, nbrs[i]);
+				if ( ! Math::equals(tmp, Math::INFINITY))
+				{
+					tmp += _cost(u, nbrs[i]);
+				}
 
 				if (Math::less(tmp, min))
 				{

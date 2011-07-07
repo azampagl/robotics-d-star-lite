@@ -62,10 +62,11 @@ namespace DStarLite
 					/**
 					 * Constructor.
 					 *
-					 * @param   unsigned int   x-coordinate
-					 * @param   unsigned int   y-coordinate
+					 * @param   unsigned int        x-coordinate
+					 * @param   unsigned int        y-coordinate
+					 * @param   double [optional]   cost of the cell
 					 */
-					Cell(unsigned int x, unsigned int y);
+					Cell(unsigned int x, unsigned int y, double cost = 1.0);
 
 					/**
 					 * Deconstructor.
@@ -123,11 +124,6 @@ namespace DStarLite
 					 */
 					unsigned int _y;
 			};
-
-			/**
-			 * Default Constructor.
-			 */
-			Map();
 
 			/**
 			 * Constructor.

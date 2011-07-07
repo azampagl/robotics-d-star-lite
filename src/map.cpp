@@ -26,17 +26,6 @@ const double Map::Cell::COST_UNWALKABLE = 100.0;
 const int Map::Cell::Hash::C = 1000000;
 
 /**
- * Default Constructor.
- */
-Map::Map()
-{
-	_rows = 0;
-	_cols = 0;
-
-	_cells = NULL;
-}
-
-/**
  * Constructor.
  *
  * @param  unsigned int   rows
@@ -55,7 +44,7 @@ Map::Map(unsigned int rows, unsigned int cols)
 
 		for (unsigned int j = 0; j < cols; j++)
 		{
-			_cells[i][j] = new Cell(i, j);
+			_cells[i][j] = new Cell(j, i);
 		}
 	}
 
@@ -216,10 +205,11 @@ unsigned int Map::rows()
 /**
  * Constructor.
  *
- * @param   unsigned int   x-coordinate
- * @param   unsigned int   y-coordinate
+ * @param   unsigned int        x-coordinate
+ * @param   unsigned int        y-coordinate'
+ * @param   double [optional]   cost of the cell
  */				
-Map::Cell::Cell(unsigned int x, unsigned int y)
+Map::Cell::Cell(unsigned int x, unsigned int y, double cost)
 {
 	_init = false;
 
@@ -227,6 +217,8 @@ Map::Cell::Cell(unsigned int x, unsigned int y)
 
 	_x = x;
 	_y = y;
+
+	this->cost = cost;
 }
 
 /**
