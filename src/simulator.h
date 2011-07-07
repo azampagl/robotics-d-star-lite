@@ -34,12 +34,12 @@ namespace DStarLite
 					/**
 					 * @var  char*  real map file
 					 */
-					char* bitmap_real;
+					char* real_bitmap;
 
 					/**
 					 * @var  char*  robot map file
 					 */
-					char* bitmap_robot;
+					char* robot_bitmap;
 
 					/**
 					 * @var  pair<int,int>  start position
@@ -105,7 +105,7 @@ namespace DStarLite
 			/**
 			 * Execute.
 			 *
-			 * @return  bool  successfull
+			 * @return  int  successfull
 			 */
 			int execute();
 
@@ -153,12 +153,12 @@ namespace DStarLite
 			/**
 			 * @var  RealWidget*  real widget
 			 */
-			RealWidget* _widget_real;
+			RealWidget* _real_widget;
 
 			/**
 			 * @var  RobotWidget*  robot widget
 			 */
-			RobotWidget* _widget_robot;
+			RobotWidget* _robot_widget;
 	};
 };
 

@@ -50,12 +50,12 @@ Simulator::Simulator(char* name, Config config)
 	_config = config;
 
 	// Make two bitmaps
-	Fl_BMP_Image bitmap_real(config.bitmap_real);
-	Fl_BMP_Image bitmap_robot(config.bitmap_robot);
+	Fl_BMP_Image real_bitmap(config.real_bitmap);
+	Fl_BMP_Image robot_bitmap(config.robot_bitmap);
 
 	// Turn black and white
-	bitmap_real.desaturate();
-	bitmap_robot.desaturate();
+	real_bitmap.desaturate();
+	robot_bitmap.desaturate();
 
 	// Make sure bitmaps were loaded
 	//if (real_bitmap.load(config.real_map) < 0 || robot_bitmap.load(config.robot_map) < 0)
@@ -66,9 +66,9 @@ Simulator::Simulator(char* name, Config config)
 	//	throw Exception();
 
 	// Widths and heights are the same, set a constant
-	int img_width = bitmap_real.w();
-	int img_height = bitmap_real.h();
-	int size = img_width * img_height * bitmap_real.d();
+	int img_width = real_bitmap.w();
+	int img_height = real_bitmap.h();
+	int size = img_width * img_height * real_bitmap.d();
 
 	// Calculate window width and height
 	int window_width = img_width * 2 + Simulator::WINDOW_IMG_PADDING + Simulator::WINDOW_WIDTH_PADDING * 2;
@@ -77,85 +77,48 @@ Simulator::Simulator(char* name, Config config)
 	_window = new Fl_Window(window_width, window_height, name);
 	_window->begin();
 
-	_widget_real = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
-	_widget_robot = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+	_real_widget = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+	_robot_widget = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
 
-	const char* buff1 = bitmap_real.data()[0];
-	_widget_real->data = new unsigned char[size];
+	const char* real_buff = real_bitmap.data()[0];
+	_real_widget->data = new unsigned char[size];
 	for (int i = 0; i < size; i++)
 	{
-		_widget_real->data[i] = buff1[i];
+		_real_widget->data[i] = real_buff[i];
 	}
 
-	const char* buff2 = bitmap_robot.data()[0];
-	_widget_robot->data = new unsigned char[size];
+	const char* robot_buff = robot_bitmap.data()[0];
+	_robot_widget->data = new unsigned char[size];
 	for (int i = 0; i < size; i++)
 	{
-		_widget_robot->data[i] = buff2[i];
+		_robot_widget->data[i] = robot_buff[i];
 	}
 	
 	_window->end();
 
 	//
-	_widget_real->robot_radius = _widget_robot->robot_radius = 2;
+	_real_widget->robot_radius = _robot_widget->robot_radius = 2;
 
 	//
-	_widget_robot->scan_radius = config.scan_radius;
+	_robot_widget->scan_radius = config.scan_radius;
 
 	// Make the map
 	_map = new Map(img_height, img_width);
-	_widget_real->current = _widget_robot->current = (*_map)(config.start.first, config.start.second);
-	_widget_real->goal = _widget_robot->goal = (*_map)(config.goal.first, config.goal.second);
+	_real_widget->current = _robot_widget->current = (*_map)(config.start.first, config.start.second);
+	_real_widget->goal = _robot_widget->goal = (*_map)(config.goal.first, config.goal.second);
 
 	// Build map
-	/*_real_map = new Map(real_bitmap.height(), real_bitmap.width());
-	_build_map(_real_map, &real_bitmap);
-	
-	_real_image = cvLoadImage(config.real_map);
-	if ( ! _real_image)
-		throw Exception();
+	for (int i = 0; i < img_height; i++)
+	{
+		for (int j = 0; j < img_width; j++)
+		{
+			int k = (i * robot_bitmap.w() * robot_bitmap.d()) + (j * robot_bitmap.d());
+			(*_map)(i, j)->cost = Simulator::COST_DIFFERENCE - ((double) robot_buff[k]) + 1.0;
+		}
+	}
 
-	_real_window_name << _name.str();
-	_real_window_name << " - Real Map";
-
-	cvNamedWindow(_real_window_name.str().c_str(), CV_WINDOW_AUTOSIZE); 
-	cvMoveWindow(_real_window_name.str().c_str(), 100, 100);
-	cvShowImage(_real_window_name.str().c_str(), _real_image);
-
-	// Build robot map, image, and window
-	_robot_map = new Map(robot_bitmap.height(), robot_bitmap.width());
-	_build_map(_robot_map, &robot_bitmap);
-
-	_robot_image = cvLoadImage(config.robot_map);
-	if ( ! _robot_image)
-		throw Exception();
-
-	_robot_window_name << _name.str();
-	_robot_window_name << " - Robot Map";
-
-	cvNamedWindow(_robot_window_name.str().c_str(), CV_WINDOW_AUTOSIZE); 
-	cvMoveWindow(_robot_window_name.str().c_str(), 700, 100);
-	cvShowImage(_robot_window_name.str().c_str(), _robot_image);
-
-	// Make sure start exists
-	if ( ! _robot_map->has(config.start.second, config.start.first))
-		throw Exception();
-
-	// Make sure goal exists
-	if ( ! _robot_map->has(config.goal.second, config.goal.first))
-		throw Exception();
-
-	_path = Path(_robot_map);
-
-	_dstar = new DStarLite(_robot_map, (*_robot_map)(config.start.second, config.start.first), (*_robot_map)(config.goal.second, config.goal.first));
-	_dstar->replan();
-
-	_planned_path = _dstar->path();
-	_smoothed_path = _path.smooth(_planned_path);
-	_smoothed_path = _robot_map->path(_smoothed_path);
-
-	_traversed_path.push_back(_smoothed_path.front());
-	//_traversed_path.push_back(_planned_path.front());*/
+	// Make planner
+	_planner = new Planner(_map, _robot_widget->current, _robot_widget->goal);
 }
 
 /**
@@ -163,8 +126,9 @@ Simulator::Simulator(char* name, Config config)
  */
 Simulator::~Simulator()
 {
-	delete _window;
 	delete _map;
+	delete _planner;
+	delete _window;
 }
 
 /**
@@ -186,131 +150,37 @@ int Simulator::draw()
  */
 void Simulator::redraw()
 {
-	/*// Get the image data from actualImage.
-	int height = _real_image->height;
-	int width = _real_image->width;
-	int step = _real_image->widthStep;
-	int depth = _real_image->depth;
-	int channels = _real_image->nChannels;
-	unsigned char* real_data = (unsigned char*) _real_image->imageData;
-	unsigned char* robot_data = (unsigned char*) _robot_image->imageData;
-
-	// Colors
-	CvScalar red   = CV_RGB(255, 0, 0);
-	CvScalar yellow  = CV_RGB(255, 255, 0);
-	CvScalar green = CV_RGB(0, 255, 0);
-	CvScalar blue  = CV_RGB(0, 0, 255);
-
-	// Reset image data.
-	for(int i = 0; i < height; i++)
-	{
-		for(int j = 0; j < width; j++)
-		{
-			double real_cost = (*_real_map)(i, j)->cost;
-			double robot_cost = (*_robot_map)(i, j)->cost;
-
-			for(int k = 0; k < channels; k++)
-			{
-				real_data[i * step + j * channels + k] = (unsigned char) ((real_cost == Tile::UNWALKABLE) ? Simulator::UNWALKABLE : real_cost + Simulator::COST_DIFFERENCE - 1.0);
-				robot_data[i * step + j * channels + k] = (unsigned char) ((robot_cost == Tile::UNWALKABLE) ? Simulator::UNWALKABLE : robot_cost + Simulator::COST_DIFFERENCE - 1.0);
-			}
-		}
-	}
-
-	Tile* position = _traversed_path.back();
-	Tile* goal = _dstar->goal();
-
-	// Draw start and goal points
-	CvPoint cv_position = cvPoint(position->x, position->y);
-	CvPoint cv_goal = cvPoint(goal->x, goal->y);
-
-	cvCircle(_real_image, cv_position, 3, CV_RGB(255,20,147), -1);
-	cvCircle(_real_image, cv_goal, 3, CV_RGB(60,179,113), -1);
-	cvCircle(_robot_image, cv_position, 3, CV_RGB(255,20,147), -1);
-	cvCircle(_robot_image, cv_goal, 3, CV_RGB(60,179,113), -1);
-
-	// Drawing robot sensor range on the image in BLUE.
-	cvCircle(_robot_image, cv_position, _config.scan_radius, blue);
-
-	// Draw traversed path in GREEN.
-	for (list<Tile*>::iterator i = _traversed_path.begin(); i != _traversed_path.end(); i++)
-	{
-		CvPoint p = cvPoint((*i)->x, (*i)->y);
-		cvCircle(_robot_image, p, 1, green, -1);
-	}
-
-	// Draw planned path in light red.
-	for (list<Tile*>::iterator i = _planned_path.begin(); i != _planned_path.end(); i++)
-	{
-		CvPoint p = cvPoint((*i)->x, (*i)->y);
-		cvCircle(_robot_image, p, 1, yellow, -1);
-	}
-
-	// Draw smoothed path in RED.
-	for (list<Tile*>::iterator i = _smoothed_path.begin(); i != _smoothed_path.end(); i++)
-	{
-		CvPoint p = cvPoint((*i)->x, (*i)->y);
-		cvCircle(_robot_image, p, 1, red, -1);
-	}
-
-	// Show the images
-	cvShowImage(_real_window_name.str().c_str(), _real_image);
-	cvShowImage(_robot_window_name.str().c_str(), _robot_image);
-
-	cvWaitKey(5);*/
+	_real_widget->redraw();
+	_robot_widget->redraw();
 }
 
 /**
  * Execute.
  *
- * @return  int  successfull
+ * @return  int
  */
 int Simulator::execute()
 {
-	/*if (_dstar->start() == _dstar->goal())
+	if (_planner->start() == _planner->goal())
 		return 1;
 
 	if (update_map())
 	{
-		if ( ! _dstar->replan())
+		if ( ! _planner->replan())
 			return -1;
 
-		_planned_path = _dstar->path();
-		_smoothed_path = _path.smooth(_planned_path);
-		_smoothed_path = _robot_map->path(_smoothed_path);
+		_robot_widget->path_planned = _planner->path();
 
-		if ( ! _smoothed_path.empty())
-		{
-			_smoothed_path.pop_front();
-		}	
-		if ( ! _planned_path.empty())
+		/*if ( ! _robot_widget->path_planned.empty())
 		{
 			_planned_path.pop_front();
-		}
-
-		//traversed_path.push_back(_planned_path.front());
-		//_dstar->start(_planned_path.front());
-		_traversed_path.push_back(_smoothed_path.front());
-		_dstar->start(_smoothed_path.front());
-	}
-	else
-	{
-		if ( ! _smoothed_path.empty())
-		{
-			_smoothed_path.pop_front();
-		}	
-		if ( ! _planned_path.empty())
-		{
-			_planned_path.pop_front();
-		}
-
-		//_traversed_path.push_back(_planned_path.front());
-		//_dstar->start(_planned_path.front());
-		_traversed_path.push_back(_smoothed_path.front());
-		_dstar->start(_smoothed_path.front());
+		}*/
 	}
 
-	return 0;*/
+	_real_widget->path_traversed.push_back(_robot_widget->path_planned.front());
+	_planner->start(_robot_widget->path_planned.front());
+	_robot_widget->path_planned.pop_front();
+
 	return 0;
 }
 
@@ -321,6 +191,7 @@ int Simulator::execute()
  */
 bool Simulator::update_map()
 {
+	return true;
 	/*bool error = false;
 
 	Tile* position = _traversed_path.back();

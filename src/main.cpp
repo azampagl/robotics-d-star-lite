@@ -5,8 +5,8 @@ int main(int argc, char **argv)
 {
 	Simulator::Config config = Simulator::Config();
 
-	config.bitmap_real = "C:/Users/sysadmin/Pictures/test03.bmp";
-	config.bitmap_robot = "C:/Users/sysadmin/Pictures/test03.bmp";
+	config.real_bitmap = "C:/Users/sysadmin/Pictures/test03.bmp";
+	config.robot_bitmap = "C:/Users/sysadmin/Pictures/test03.bmp";
 
 	config.start.first = 2;
 	config.start.second = 2;
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
 	Simulator sim = Simulator("Simulator 1", config);
 
-	//int result = sim.execute();
+	int result = sim.execute();
 	sim.draw();
 
 	return 0;
