@@ -20,7 +20,7 @@ const double Simulator::COST_DIFFERENCE = 255.0;
  */
 const unsigned char Simulator::UNWALKABLE_CELL = 0;
 
-/**
+/*
  * @var  int  window width padding
  */
 const int Simulator::WINDOW_WIDTH_PADDING = 10;
@@ -33,7 +33,7 @@ const int Simulator::WINDOW_HEIGHT_PADDING = 10;
 /**
  * @var  int  window image padding
  */
-const int Simulator::WINDOW_IMG_PADDING = 100;
+const int Simulator::WINDOW_IMG_PADDING = 10;
 
 /**
  * Constructor.
@@ -52,6 +52,10 @@ Simulator::Simulator(char* name, Config config)
 	// Make two bitmaps
 	Fl_BMP_Image bitmap_real(config.bitmap_real);
 	Fl_BMP_Image bitmap_robot(config.bitmap_robot);
+
+	// Turn black and white
+	bitmap_real.desaturate();
+	bitmap_robot.desaturate();
 
 	// Make sure bitmaps were loaded
 	//if (real_bitmap.load(config.real_map) < 0 || robot_bitmap.load(config.robot_map) < 0)
@@ -74,7 +78,7 @@ Simulator::Simulator(char* name, Config config)
 	_window->begin();
 
 	_widget_real = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
-	_widget_robot = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+	_widget_robot = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
 
 	const char* buff1 = bitmap_real.data()[0];
 	_widget_real->data = new unsigned char[size];
@@ -91,8 +95,17 @@ Simulator::Simulator(char* name, Config config)
 	}
 	
 	_window->end();
-	//0.2989 * R + 0.5870 * G + 0.1140 * B;
 
+	//
+	_widget_real->robot_radius = _widget_robot->robot_radius = 2;
+
+	//
+	_widget_robot->scan_radius = config.scan_radius;
+
+	// Make the map
+	_map = new Map(img_height, img_width);
+	_widget_real->current = _widget_robot->current = (*_map)(config.start.first, config.start.second);
+	_widget_real->goal = _widget_robot->goal = (*_map)(config.goal.first, config.goal.second);
 
 	// Build map
 	/*_real_map = new Map(real_bitmap.height(), real_bitmap.width());
@@ -151,8 +164,19 @@ Simulator::Simulator(char* name, Config config)
 Simulator::~Simulator()
 {
 	delete _window;
-	//delete _widget_real;
-	//delete _widget_robot;
+	delete _map;
+}
+
+/**
+ * Draw.
+ *
+ * @return  int
+ */
+int Simulator::draw()
+{
+	Fl::visual(FL_RGB);
+	_window->show();
+	return Fl::run();
 }
 
 /**
@@ -160,10 +184,8 @@ Simulator::~Simulator()
  *
  * @return  void
  */
-void Simulator::draw()
+void Simulator::redraw()
 {
-	Fl::visual(FL_RGB);
-	_window->show();
 	/*// Get the image data from actualImage.
 	int height = _real_image->height;
 	int width = _real_image->width;

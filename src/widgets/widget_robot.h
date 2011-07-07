@@ -17,16 +17,23 @@ namespace DStarLite
 	{
 		public:
 
+			/*
+			 * @var  int
+			 */
 			int scan_radius;
 
+			/*
+			 * @var  list<Map::Cell*>
+			 */
 			list<Map::Cell*> path_planned;
 
-			RobotWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h){}
+			RobotWidget(int x, int y, int w, int h);
+			//RobotWidget(int X,int Y,int W,int H) : BaseWidget(X,Y,W,H) {}
 
 			/*
-			 * @var  unsigned char*  data
+			 * @see  parent
 			 */
-			void draw();
+			virtual void draw();
 	};
 };
 

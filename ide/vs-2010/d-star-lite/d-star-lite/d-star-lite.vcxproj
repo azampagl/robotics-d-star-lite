@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\..\..\src\math.cpp" />
     <ClCompile Include="..\..\..\..\src\planner.cpp" />
     <ClCompile Include="..\..\..\..\src\simulator.cpp" />
+    <ClCompile Include="..\..\..\..\src\widgets\widget_base.cpp" />
     <ClCompile Include="..\..\..\..\src\widgets\widget_real.cpp" />
     <ClCompile Include="..\..\..\..\src\widgets\widget_robot.cpp" />
   </ItemGroup>

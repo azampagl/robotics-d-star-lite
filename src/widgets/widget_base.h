@@ -11,8 +11,11 @@
 
 #include <list>
 
-#include <FL/fl_draw.H>
+#include <FL/Fl.H>
 #include <FL/FL_Widget.H>
+#include <FL/FL_BMP_Image.H>
+#include <FL/FL_Widget.H>
+#include <FL/fl_draw.H>
 
 #include "../map.h"
 
@@ -42,7 +45,9 @@ namespace DStarLite
 			 */
 			Map::Cell* goal;
 
-			BaseWidget(int x, int y, int w, int h) : Fl_Widget(x, y, w, h){}
+			BaseWidget(int x, int y, int w, int h);
+
+			~BaseWidget();
 	};
 };
 

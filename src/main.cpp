@@ -11,10 +11,10 @@ int main(int argc, char **argv)
 	config.start.first = 2;
 	config.start.second = 2;
 
-	config.goal.first = 64;
-	config.goal.second = 64;
+	config.goal.first = 50;
+	config.goal.second = 50;
 
-	config.scan_radius = 50;
+	config.scan_radius = 20;
 
 	Simulator sim = Simulator("Simulator 1", config);
 

@@ -55,14 +55,14 @@ Map::Map(unsigned int rows, unsigned int cols)
 
 		for (unsigned int j = 0; j < cols; j++)
 		{
-			_cells[i][j] = new Cell(j, i);
+			_cells[i][j] = new Cell(i, j);
 		}
 	}
 
 	// Attach neighbors
-	for (unsigned int i = 0; i < _rows; i++)
+	for (unsigned int i = 0; i < rows; i++)
 	{
-		for (unsigned int j = 0; j < _cols; j++)
+		for (unsigned int j = 0; j < cols; j++)
 		{
 			Cell** nbrs = new Cell*[Cell::NUM_NBRS];
 			for (unsigned int k = 0; k < Cell::NUM_NBRS; k++)
@@ -82,23 +82,23 @@ Map::Map(unsigned int rows, unsigned int cols)
 				// Top middle
 				nbrs[1] = _cells[i - 1][j];
 
-				if (j != cols)
+				if (j < cols - 1)
 				{
 					// Top right
 					nbrs[2] = _cells[i - 1][j + 1];
 				}
 			}
 
-			if (j != cols)
+			if (j < cols - 1)
 			{
 				// Middle right
 				nbrs[3] = _cells[i][j + 1];
 			}
 			
 			// Bottom
-			if (i != rows)
+			if (i < rows - 1)
 			{
-				if (j != cols)
+				if (j < cols - 1)
 				{
 					// Bottom right
 					nbrs[4] = _cells[i + 1][j + 1];

@@ -10,8 +10,13 @@
 
 using namespace DStarLite;
 
+RobotWidget::RobotWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h)
+{
+}
+
 void RobotWidget::draw()
 {
+	// Keep drawings within the widget
 	fl_push_clip(x() ,y() ,w() ,h());
 
 	// Draw map
@@ -21,16 +26,20 @@ void RobotWidget::draw()
 	fl_color(FL_YELLOW);
 	for (list<Map::Cell*>::iterator i = path_planned.begin(); i != path_planned.end(); i++)
 	{
-		fl_point((*i)->x(), (*i)->y());
+		fl_point(x() + (*i)->x(), y() + (*i)->y());
 	}
 
 	// Draw scanner radius
+	fl_begin_complex_polygon();
 	fl_color(FL_RED);
-	fl_arc(current->x(), current->y(), scan_radius, -360, 360);
+	fl_arc(x() + current->x(), y() + current->y(), scan_radius, -360, 360);
+	fl_end_complex_polygon();
 
 	// Draw current position
+	fl_begin_complex_polygon();
 	fl_color(FL_DARK_RED);
-	fl_circle(current->x(), current->y(), robot_radius);
+	fl_circle(x() + current->x(), y() + current->y(), robot_radius);
+	fl_end_complex_polygon();
 	
 	fl_pop_clip();
 }

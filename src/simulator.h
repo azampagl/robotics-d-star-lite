@@ -98,9 +98,9 @@ namespace DStarLite
 			/**
 			 * Draw.
 			 *
-			 * @return  void
+			 * @return  int
 			 */
-			void draw();
+			int draw();
 
 			/**
 			 * Execute.
@@ -108,6 +108,13 @@ namespace DStarLite
 			 * @return  bool  successfull
 			 */
 			int execute();
+
+			/**
+			 * Redraw.
+			 *
+			 * @return  void
+			 */
+			void redraw();
 
 			/*
 			 * Scans map for updated cells.

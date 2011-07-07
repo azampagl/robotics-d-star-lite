@@ -42,6 +42,9 @@
     <ClCompile Include="..\..\..\..\src\simulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\widgets\widget_base.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\map.h">

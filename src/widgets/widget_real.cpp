@@ -10,8 +10,13 @@
 
 using namespace DStarLite;
 
+RealWidget::RealWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h)
+{
+}
+
 void RealWidget::draw()
 {
+	// Keep drawings withing widget
 	fl_push_clip(x() ,y() ,w() ,h());
 
 	// Draw map
@@ -21,12 +26,14 @@ void RealWidget::draw()
 	fl_color(FL_GREEN);
 	for (list<Map::Cell*>::iterator i = path_traversed.begin(); i != path_traversed.end(); i++)
 	{
-		fl_point((*i)->x(), (*i)->y());
+		fl_point(x() + (*i)->x(), y() + (*i)->y());
 	}
 
 	// Draw current position
+	fl_begin_complex_polygon();
 	fl_color(FL_DARK_RED);
-	fl_circle(current->x(), current->y(), robot_radius);
+	fl_circle(x() + current->x(), y() + current->y(), robot_radius);
+	fl_end_complex_polygon();
 
 	fl_pop_clip();
 }

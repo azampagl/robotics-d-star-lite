@@ -17,14 +17,20 @@ namespace DStarLite
 	{
 		public:
 
-			list<Map::Cell*> path_traversed;
-
-			RealWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h){}
-
 			/*
 			 * @var  unsigned char*  data
 			 */
-			void draw();
+			list<Map::Cell*> path_traversed;
+
+			/*
+			 * @see  parent
+			 */
+			RealWidget(int x, int y, int w, int h);
+
+			/*
+			 * @see  parent
+			 */
+			virtual void draw();
 	};
 };
 
