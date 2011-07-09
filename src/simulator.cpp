@@ -16,9 +16,9 @@ using namespace DStarLite;
 const double Simulator::COST_DIFFERENCE = 255.0;
 
 /**
- * @var  unsigned char  unwalkable value of bitmap
+ * @var  double  unwalkable value of bitmap
  */
-const unsigned char Simulator::UNWALKABLE_CELL = 0;
+const double Simulator::UNWALKABLE_CELL = 0.0;
 
 /*
  * @var  int  window width padding
@@ -65,21 +65,14 @@ Simulator::Simulator(char* name, Config config)
 	Fl_BMP_Image real_bitmap(config.real_bitmap);
 	Fl_BMP_Image robot_bitmap(config.robot_bitmap);
 
-	// Turn black and white
-	real_bitmap.desaturate();
-	robot_bitmap.desaturate();
-
-	// Make sure bitmaps were loaded
-	//if (real_bitmap.load(config.real_map) < 0 || robot_bitmap.load(config.robot_map) < 0)
-	//	throw Exception();
-
-	// Make sure images are same size
-	//if (real_bitmap.height() != robot_bitmap.height() || real_bitmap.width() != robot_bitmap.width())
-	//	throw Exception();
-
 	// Widths and heights are the same, set a constant
 	int img_width = real_bitmap.w();
 	int img_height = real_bitmap.h();
+	int img_depth = real_bitmap.d();
+
+	// Make sure the real image and the robot's image are the same dimensions
+	if (img_width != robot_bitmap.w() || img_height != robot_bitmap.h() || img_depth != robot_bitmap.d())
+		throw;
 
 	// Button width and height
 	int button_width = 100;
@@ -104,20 +97,31 @@ Simulator::Simulator(char* name, Config config)
 	_start_button = new Fl_Button((int)((window_width / 2) - (button_width / 2)), img_height + Simulator::WINDOW_HEIGHT_PADDING * 2, button_width, button_height, "Start");
 	_start_button->callback(Simulator::callback, (void*) this);
 
-	int size = img_width * img_height * real_bitmap.d();
+	_real_widget->data = new unsigned char[img_width * img_height];
+	_robot_widget->data = new unsigned char[img_width * img_height];
 
-	const char* real_buff = real_bitmap.data()[0];
-	_real_widget->data = new unsigned char[size];
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < img_height; i++)
 	{
-		_real_widget->data[i] = real_buff[i];
-	}
+		for (int j = 0; j < img_width; j++)
+		{
+			int k1 = (i * img_width) + j;
+			int k2 = (i * img_width * img_depth) + (j * img_depth);
 
-	const char* robot_buff = robot_bitmap.data()[0];
-	_robot_widget->data = new unsigned char[size];
-	for (int i = 0; i < size; i++)
-	{
-		_robot_widget->data[i] = robot_buff[i];
+			if (img_depth == 1)
+			{
+				_real_widget->data[k1] = real_bitmap.array[k2];
+				_robot_widget->data[k1] = robot_bitmap.array[k2];
+			}
+			else if (img_depth == 3)
+			{
+				_real_widget->data[k1] = (unsigned char) (0.3 * real_bitmap.array[k2] + 0.59 * real_bitmap.array[k2 + 1] + 0.11 * real_bitmap.array[k2 + 2] + 0.5);
+				_robot_widget->data[k1] = (unsigned char) (0.3 * robot_bitmap.array[k2] + 0.59 * robot_bitmap.array[k2 + 1] + 0.11 * robot_bitmap.array[k2 + 2] + 0.5);
+			}
+			else
+			{
+				throw;
+			}
+		}
 	}
 	
 	_window->end();
@@ -138,8 +142,19 @@ Simulator::Simulator(char* name, Config config)
 	{
 		for (int j = 0; j < img_width; j++)
 		{
-			int k = (i * robot_bitmap.w() * robot_bitmap.d()) + (j * robot_bitmap.d());
-			(*_map)(i, j)->cost = Simulator::COST_DIFFERENCE - ((double) robot_buff[k]) + 1.0;
+			int k = (i * img_width) + j;
+			double v = (double) _robot_widget->data[k];
+
+			if (v == Simulator::UNWALKABLE_CELL)
+			{
+				v = Map::Cell::COST_UNWALKABLE;
+			}
+			else
+			{
+				v = Simulator::COST_DIFFERENCE - v + 1.0;
+			}
+
+			(*_map)(i, j)->cost = v;
 		}
 	}
 

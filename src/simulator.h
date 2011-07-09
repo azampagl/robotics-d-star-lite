@@ -79,9 +79,9 @@ namespace DStarLite
 			static const double COST_DIFFERENCE;
 
 			/**
-			 * @var  unsigned char  unwalkable value of bitmap
+			 * @var  double  unwalkable value of bitmap
 			 */
-			static const unsigned char UNWALKABLE_CELL;
+			static const double UNWALKABLE_CELL;
 
 			/**
 			 * 

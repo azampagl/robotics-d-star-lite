@@ -17,6 +17,9 @@ int main(int argc, char **argv)
 	config.goal.first = 499;
 	config.goal.second = 499;
 
+	//config.goal.first = 19;
+	//config.goal.second = 19;
+
 	config.scan_radius = 20;
 
 	Simulator sim = Simulator("Simulator 1", config);

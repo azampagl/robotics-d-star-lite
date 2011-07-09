@@ -18,7 +18,7 @@ const unsigned int Map::Cell::NUM_NBRS = 8;
 /*
  * @var  double  cost of an unwalkable tile
  */
-const double Map::Cell::COST_UNWALKABLE = 100.0;
+const double Map::Cell::COST_UNWALKABLE = 100000000.0;
 
 /**
  * @var  int  hash "constant" (may need to change if large map)

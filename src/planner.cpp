@@ -234,6 +234,9 @@ bool Planner::_compute()
  */
 double Planner::_cost(Map::Cell* a, Map::Cell* b)
 {
+	if (a->cost == Map::Cell::COST_UNWALKABLE || b->cost == Map::Cell::COST_UNWALKABLE)
+		return Map::Cell::COST_UNWALKABLE;
+
 	unsigned int dx = labs(a->x() - b->x());
 	unsigned int dy = labs(a->y() - b->y());
 	double scale = 1.0;
@@ -366,7 +369,7 @@ void Planner::_update(Map::Cell* u)
 		_list_remove(u);
 	}
 
-	if ( ! Math::equals(_g(u), _rhs(u)))
+	if (! Math::equals(_g(u), _rhs(u)))
 	{
 		_list_insert(u, _k(u));
 	}

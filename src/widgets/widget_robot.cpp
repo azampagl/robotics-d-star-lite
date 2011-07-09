@@ -23,7 +23,7 @@ void RobotWidget::draw()
 	fl_draw_image_mono(data, x(), y(), w(), h());
 
 	// Draw planned path
-	fl_color(FL_YELLOW);
+	fl_color(FL_BLUE);
 	for (list<Map::Cell*>::iterator i = path_planned.begin(); i != path_planned.end(); i++)
 	{
 		fl_point(x() + (*i)->x(), y() + (*i)->y());
