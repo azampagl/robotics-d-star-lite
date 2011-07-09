@@ -11,6 +11,7 @@
 
 #include <FL/Fl.H>
 #include <FL/FL_BMP_Image.H>
+#include <FL/FL_Button.H>
 #include <FL/FL_Window.H>
 
 #include "planner.h"
@@ -81,6 +82,11 @@ namespace DStarLite
 			 * @var  unsigned char  unwalkable value of bitmap
 			 */
 			static const unsigned char UNWALKABLE_CELL;
+
+			/**
+			 * 
+			 */
+			static void callback(Fl_Widget* w, void* p);
 
 			/**
 			 * Constructor.
@@ -159,6 +165,11 @@ namespace DStarLite
 			 * @var  RobotWidget*  robot widget
 			 */
 			RobotWidget* _robot_widget;
+
+			/**
+			 * @var  Fl_Button*  start button
+			 */
+			Fl_Button* _start_button;
 	};
 };
 

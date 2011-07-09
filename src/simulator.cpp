@@ -35,6 +35,18 @@ const int Simulator::WINDOW_HEIGHT_PADDING = 10;
  */
 const int Simulator::WINDOW_IMG_PADDING = 10;
 
+void Simulator::callback(Fl_Widget* w, void* p)
+{
+	Simulator* simulator = (Simulator*) p;
+
+	while (simulator->execute() == 0)
+	{
+		simulator->redraw();
+		Fl::check();
+		Fl::wait(0.05);
+	}
+}
+
 /**
  * Constructor.
  * 
@@ -68,17 +80,31 @@ Simulator::Simulator(char* name, Config config)
 	// Widths and heights are the same, set a constant
 	int img_width = real_bitmap.w();
 	int img_height = real_bitmap.h();
-	int size = img_width * img_height * real_bitmap.d();
+
+	// Button width and height
+	int button_width = 100;
+	int button_height = 50;
 
 	// Calculate window width and height
 	int window_width = img_width * 2 + Simulator::WINDOW_IMG_PADDING + Simulator::WINDOW_WIDTH_PADDING * 2;
-	int window_height = img_height + Simulator::WINDOW_HEIGHT_PADDING * 2;
+
+	if (window_width < button_width)
+	{
+		window_width = button_width * 2;
+	}
+
+	int window_height = img_height + Simulator::WINDOW_HEIGHT_PADDING * 3 + button_height;
 
 	_window = new Fl_Window(window_width, window_height, name);
 	_window->begin();
 
 	_real_widget = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
 	_robot_widget = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+
+	_start_button = new Fl_Button((int)((window_width / 2) - (button_width / 2)), img_height + Simulator::WINDOW_HEIGHT_PADDING * 2, button_width, button_height, "Start");
+	_start_button->callback(Simulator::callback, (void*) this);
+
+	int size = img_width * img_height * real_bitmap.d();
 
 	const char* real_buff = real_bitmap.data()[0];
 	_real_widget->data = new unsigned char[size];
@@ -119,6 +145,8 @@ Simulator::Simulator(char* name, Config config)
 
 	// Make planner
 	_planner = new Planner(_map, _robot_widget->current, _robot_widget->goal);
+
+	_real_widget->path_traversed.push_back(_planner->start());
 }
 
 /**
@@ -150,8 +178,7 @@ int Simulator::draw()
  */
 void Simulator::redraw()
 {
-	_real_widget->redraw();
-	_robot_widget->redraw();
+	_window->redraw();
 }
 
 /**
@@ -162,7 +189,10 @@ void Simulator::redraw()
 int Simulator::execute()
 {
 	if (_planner->start() == _planner->goal())
+	{
+		_real_widget->current = _robot_widget->current = _planner->goal();
 		return 1;
+	}
 
 	if (update_map())
 	{
@@ -171,14 +201,15 @@ int Simulator::execute()
 
 		_robot_widget->path_planned = _planner->path();
 
-		/*if ( ! _robot_widget->path_planned.empty())
+		if ( ! _robot_widget->path_planned.empty())
 		{
-			_planned_path.pop_front();
-		}*/
+			_robot_widget->path_planned.pop_front();
+		}
 	}
 
 	_real_widget->path_traversed.push_back(_robot_widget->path_planned.front());
 	_planner->start(_robot_widget->path_planned.front());
+	_real_widget->current = _robot_widget->current = _planner->start();
 	_robot_widget->path_planned.pop_front();
 
 	return 0;
