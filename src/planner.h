@@ -1,7 +1,7 @@
 /**
  * DStarLite.
  *
- * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
+ * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
  * Sven Koenig and Maxim Likhachev
  *
  * Figure 5: D* Lite: Final Version.

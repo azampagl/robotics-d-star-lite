@@ -1,7 +1,7 @@
 /**
  * DStarLite.
  *
- * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
+ * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
  * Sven Koenig and Maxim Likhachev
  *
  * Figure 5: D* Lite: Final Version.
@@ -95,7 +95,7 @@ bool Planner::replan()
 
 	Map::Cell** nbrs = NULL;
 	Map::Cell* min_cell = NULL;
-	double min_cost, tmp_cost = Math::INFINITY;
+	double min_cost, tmp_cost, tmp_g = Math::INFINITY;
 
 	Map::Cell* current = _start;
 	_path.push_back(current);
@@ -103,7 +103,7 @@ bool Planner::replan()
 	// Follow the path with the least cost until goal is reached
 	while (current != _goal)
 	{
-		if (Math::equals(_g(current), Math::INFINITY))
+		if (current == NULL || Math::equals(_g(current), Math::INFINITY))
 			return false;
 
 		nbrs = current->nbrs();
@@ -114,7 +114,13 @@ bool Planner::replan()
 		{
 			if (nbrs[i] != NULL)
 			{
-				tmp_cost = _cost(current, nbrs[i]) + _g(nbrs[i]);
+				tmp_cost = _cost(current, nbrs[i]);
+				tmp_g = _g(nbrs[i]);
+
+				if (Math::equals(tmp_cost, Math::INFINITY) || Math::equals(tmp_g, Math::INFINITY))
+					continue;
+
+				tmp_cost += tmp_g;
 
 				if (Math::less(tmp_cost, min_cost))
 				{

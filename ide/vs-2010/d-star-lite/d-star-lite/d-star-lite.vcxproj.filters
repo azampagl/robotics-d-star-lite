@@ -27,9 +27,6 @@
     <ClCompile Include="..\..\..\..\src\map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\planner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,12 +42,12 @@
     <ClCompile Include="..\..\..\..\src\widgets\widget_base.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\planner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\planner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\math.h">
@@ -66,6 +63,9 @@
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\simulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\planner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
