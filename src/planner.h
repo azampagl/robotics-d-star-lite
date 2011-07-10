@@ -4,7 +4,7 @@
  * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
  * Sven Koenig and Maxim Likhachev
  *
- * Figure 5: D* Lite: Final Version.
+ * Figure 6: D* Lite: Final Version (optimized verion).
  *
  * @package		DStarLite
  * @author		Aaron Zampaglione <azampagl@gmail.com>
@@ -204,6 +204,15 @@ namespace DStarLite
 			 * @return  void
 			 */
 			void _list_remove(Map::Cell* u);
+
+			/**
+			 * Updates cell in the open list.
+			 *
+			 * @param   Map::Cell*
+			 * @param   pair<double,double>
+			 * @return  void
+			 */
+			void _list_update(Map::Cell* u, pair<double,double> k);
 
 			/**
 			 * Gets/Sets rhs value for a cell.

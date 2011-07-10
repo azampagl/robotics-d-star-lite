@@ -4,7 +4,7 @@
  * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
  * Sven Koenig and Maxim Likhachev
  *
- * Figure 5: D* Lite: Final Version.
+ * Figure 6: D* Lite: Final Version (optimized verion).
  *
  * @package		DStarLite
  * @author		Aaron Zampaglione <azampagl@gmail.com>
@@ -219,27 +219,71 @@ bool Planner::_compute()
 		u = _open_list.begin()->second;
 		k_old = _open_list.begin()->first;
 		k_new = _k(u);
-
-		_list_remove(u);
 		
 		if (key_compare(k_old, k_new))
 		{
-			_list_insert(u, k_new);
+			_list_update(u, k_new);
+		}
+		else if (Math::greater(_g(u), _rhs(u)))
+		{
+			_g(u, _rhs(u));
+
+			_list_remove(u);
+
+			nbrs = u->nbrs();
+
+			for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+			{
+				if (nbrs[i] != NULL)
+				{
+					if (nbrs[i] != _goal)
+					{
+						_rhs(nbrs[i], min(_rhs(nbrs[i]), _cost(nbrs[i], u) + _g(u)));
+					}
+
+					_update(nbrs[i]);
+				}
+			}
 		}
 		else
 		{
-			if (Math::greater(_g(u), _rhs(u)))
-			{
-				_g(u, _rhs(u));
-			}
-			else
-			{
-				_g(u, Math::INFINITY);
-
-				_update(u);
-			}
+			double g_old = _g(u);
+			_g(u, Math::INFINITY);
 
 			nbrs = u->nbrs();
+
+			double min_cost, tmp_cost, tmp_g;
+			min_cost = tmp_cost = tmp_g = Math::INFINITY;
+
+			if (u != _goal)
+			{
+				tmp_g = _g(u);
+
+				if (Math::equals(tmp_g, Math::INFINITY))
+					break;
+
+				for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+				{
+					if (nbrs[i] != NULL)
+					{
+						tmp_cost = _cost(u, nbrs[i]);
+
+						if (Math::equals(tmp_cost, Math::INFINITY))
+							continue;
+
+						tmp_cost += tmp_g;
+
+						if (Math::less(tmp_cost, min_cost))
+						{
+							min_cost = tmp_cost;
+						}
+					}
+				}
+
+				_rhs(u, min);
+			}
+
+			_update(u);
 
 			for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
 			{
@@ -360,6 +404,31 @@ void Planner::_list_remove(Map::Cell* u)
 }
 
 /**
+ * Updates cell in the open list.
+ *
+ * @param   Map::Cell*
+ * @param   pair<double,double>
+ * @return  void
+ */
+void Planner::_list_update(Map::Cell* u, pair<double,double> k)
+{
+	OL::iterator pos1 = _open_hash[u];
+	OL::iterator pos2 = pos1;
+
+	if (pos1 == _open_list.end())
+	{
+		pos2 = _open_list.end();
+	}
+	else
+	{
+		pos2++;
+	}
+
+	_open_list.erase(pos1);
+	_open_hash[u] = _open_list.insert(pos2, OL_PAIR(k, u));
+}
+
+/**
  * Gets/Sets rhs value for a cell.
  * 
  * @param   Map::Cell*          cell to retrieve/update
@@ -390,42 +459,20 @@ double Planner::_rhs(Map::Cell* u, double value)
  */
 void Planner::_update(Map::Cell* u)
 {
-	if (u != _goal)
+	bool diff = ! Math::equals(_g(u), _rhs(u));
+	bool exists = (_open_hash.find(u) != _open_hash.end());
+
+	if (diff && exists)
 	{
-		Map::Cell** nbrs = u->nbrs();
-
-		double tmp;
-		double min = Math::INFINITY;
-
-		for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
-		{
-			if (nbrs[i] != NULL)
-			{
-				tmp = _g(nbrs[i]);
-
-				if ( ! Math::equals(tmp, Math::INFINITY))
-				{
-					tmp += _cost(u, nbrs[i]);
-				}
-
-				if (Math::less(tmp, min))
-				{
-					min = tmp;
-				}
-			}
-		}
-
-		_rhs(u, min);
+		_list_update(u, _k(u));
 	}
-
-	if (_open_hash.find(u) != _open_hash.end())
-	{
-		_list_remove(u);
-	}
-
-	if ( ! Math::equals(_g(u), _rhs(u)))
+	else if (diff && ! exists)
 	{
 		_list_insert(u, _k(u));
+	}
+	else if ( ! diff && exists)
+	{
+		_list_remove(u);
 	}
 }
 
