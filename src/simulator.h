@@ -12,7 +12,8 @@
 #include <FL/Fl.H>
 #include <FL/FL_BMP_Image.H>
 #include <FL/FL_Button.H>
-#include <FL/FL_Window.H>
+#include <FL/Fl_Double_Window.H>
+//#include <FL/FL_Window.H>
 
 #include "planner.h"
 #include "map.h"

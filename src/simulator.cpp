@@ -93,11 +93,14 @@ Simulator::Simulator(char* name, Config config)
 
 	int window_height = img_height + Simulator::WINDOW_HEIGHT_PADDING * 3 + button_height;
 
-	_window = new Fl_Window(window_width, window_height, name);
+	_window = new Fl_Double_Window(window_width, window_height, name);
+	_window->box(FL_FLAT_BOX);
 	_window->begin();
 
 	_real_widget = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+	_real_widget->box(FL_NO_BOX);
 	_robot_widget = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
+	_robot_widget->box(FL_NO_BOX);
 
 	_start_button = new Fl_Button((int)((window_width / 2) - (button_width / 2)), img_height + Simulator::WINDOW_HEIGHT_PADDING * 2, button_width, button_height, "Start");
 	_start_button->callback(Simulator::callback, (void*) this);
