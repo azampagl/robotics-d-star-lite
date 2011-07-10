@@ -1,6 +1,11 @@
 /**
  * DStarLite.
  *
+ * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
+ * Sven Koenig and Maxim Likhachev
+ *
+ * Figure 5: D* Lite: Final Version.
+ *
  * @package		DStarLite
  * @author		Aaron Zampaglione <azampagl@gmail.com>
  * @copyright	Copyright (C) 2011 Aaron Zampaglione
@@ -9,8 +14,6 @@
 #ifndef DSTARLITE_PLANNER_H
 #define DSTARLITE_PLANNER_H
 
-//#include <functional>
-//#include <algorithm>
 #include <list>
 #include <map>
 #include <unordered_map>
@@ -35,16 +38,16 @@ namespace DStarLite
 			};
 
 			/*
-			 * @var  static const double  max steps before assuming no path possible
+			 * @var  static const double  max steps before assuming no solution possible
 			 */
 			static const double MAX_STEPS;
 
 			/**
 			 * Constructor.
 			 *
-			 * @param  Map*    map
-			 * @param  Cell*   start
-			 * @param  Cell*   goal
+			 * @param  Map*         map
+			 * @param  Map::Cell*   start cell
+			 * @param  Map::Cell*   goal cell
 			 */
 			Planner(Map* map,  Map::Cell* start, Map::Cell* goal);
 
@@ -94,49 +97,49 @@ namespace DStarLite
 
 		protected:			
 
-			/*
-			 * @var  list<Map::Cell*>  path
-			 */
-			list<Map::Cell*> _path;
-
-			/*
-			 * @var  double  accumulated heuristic value
-			 */
-			double _km;
-
-			/*
-			 * @var  Map*  map
-			 */
-			Map* _map;
-
-			/*
-			 * @var  Tile*  start, goal, and last start tile
-			 */
-			Map::Cell* _start;
-			Map::Cell* _goal;
-			Map::Cell* _last;
-
-			/*
-			 * @var  multimap  open list
-			 */
-			typedef pair<pair<double,double>, Map::Cell*> OL_PAIR;
-			typedef multimap<pair<double,double>, Map::Cell*, KeyCompare> OL;
-			OL _open_list;
-
-			/*
-			 * @var  unordered_map  open hash (stores position in multimap)
-			 */
-			typedef tr1::unordered_map<Map::Cell*, OL::iterator, Map::Cell::Hash> OH;
-			OH _open_hash;
-
-			/*
+			/**
 			 * @var  unordered_map  cell hash (keeps track of all the cells)
 			 */
 			typedef tr1::unordered_map<Map::Cell*, pair<double,double>, Map::Cell::Hash> CH;
 			CH _cell_hash;
 
 			/**
-			 * Generate cell.
+			 * @var  double  accumulated heuristic value
+			 */
+			double _km;
+
+			/**
+			 * @var  Map*  map
+			 */
+			Map* _map;
+
+			/**
+			 * @var  list<Map::Cell*>  path
+			 */
+			list<Map::Cell*> _path;
+
+			/**
+			 * @var  multimap  open list
+			 */
+			typedef pair<pair<double,double>, Map::Cell*> OL_PAIR;
+			typedef multimap<pair<double,double>, Map::Cell*, KeyCompare> OL;
+			OL _open_list;
+
+			/**
+			 * @var  unordered_map  open hash (stores position in multimap)
+			 */
+			typedef tr1::unordered_map<Map::Cell*, OL::iterator, Map::Cell::Hash> OH;
+			OH _open_hash;
+
+			/**
+			 * @var  Map::Cell*  start, goal, and last start tile
+			 */
+			Map::Cell* _start;
+			Map::Cell* _goal;
+			Map::Cell* _last;
+
+			/**
+			 * Generates a cell.
 			 *
 			 * @param   Map::Cell*
 			 * @return  void
@@ -144,14 +147,14 @@ namespace DStarLite
 			void _cell(Map::Cell* u);
 
 			/**
-			 * Compute shortest path.
+			 * Computes shortest path.
 			 *
 			 * @return  bool   successful
 			 */
 			bool _compute();
 
 			/**
-			 * Calculatse the cost from one cell to another cell.
+			 * Calculates the cost from one cell to another cell.
 			 * 
 			 * @param   Map::Cell*   cell a
 			 * @param   Map::Cell*   cell b
@@ -169,7 +172,7 @@ namespace DStarLite
 			double _g(Map::Cell* u, double value = DBL_MIN);
 
 			/**
-			 * Calculates heuristic between two cells.
+			 * Calculates heuristic between two cells (manhattan distance).
 			 *
 			 * @param   Map::Cell*   cell a
 			 * @param   Map::Cell*   cell b

@@ -10,23 +10,23 @@
 
 using namespace DStarLite;
 
-/*
+/**
  * @var  double  INFINITY
  */
 const double Math::INFINITY = DBL_MAX;
 
-/*
+/**
  * @var  double  PI
  */
 const double Math::PI = 3.14159265;
 
-/*
+/**
  * @var  double  SQRT2
  */
 const double Math::SQRT2 = 1.41421356237309504880;
 
 /**
- * Convert degrees to radians.
+ * Converts degrees to radians.
  *
  * @param   double   degrees
  * @return  double   radians
@@ -37,7 +37,7 @@ double Math::deg2rad(double degrees)
 }
 
 /**
- * Convert degrees to a signed degree (-180 < degrees <= 180)
+ * Converts degrees to a signed degree (-180 < degrees <= 180)
  *
  * @param   double   degrees
  * @return  double   degrees
@@ -100,7 +100,7 @@ bool Math::less(double a, double b, double precision)
 }
 
 /**
- * Convert radians to degrees.
+ * Converts radians to degrees.
  *
  * @param   double   radians
  * @return  double   degrees
@@ -111,7 +111,7 @@ double Math::rad2deg(double radians)
 }
 
 /**
- * Convert radians to a signed radians value (-PI < degrees <= PI)
+ * Converts radians to a signed radians value (-PI < degrees <= PI)
  *
  * @param   double   radians
  * @return  double   radians

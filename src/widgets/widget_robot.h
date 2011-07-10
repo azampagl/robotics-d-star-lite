@@ -11,26 +11,34 @@
 
 #include "widget_base.h"
 
+using namespace DStarLite;
+
 namespace DStarLite
 {
 	class RobotWidget : public BaseWidget
 	{
 		public:
 
-			/*
-			 * @var  int
+			/**
+			 * @var  int  scan radius of the robot
 			 */
 			int scan_radius;
 
-			/*
-			 * @var  list<Map::Cell*>
+			/**
+			 * @var  list<Map::Cell*>  planned path
 			 */
 			list<Map::Cell*> path_planned;
 
+			/**
+			 * Constructor.
+			 *
+			 * @see  parent
+			 */
 			RobotWidget(int x, int y, int w, int h);
-			//RobotWidget(int X,int Y,int W,int H) : BaseWidget(X,Y,W,H) {}
 
-			/*
+			/**
+			 * Draws basic map and overlaying graphics (path, robot, etc).
+			 *
 			 * @see  parent
 			 */
 			virtual void draw();

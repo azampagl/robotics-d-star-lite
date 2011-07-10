@@ -31,7 +31,7 @@ namespace DStarLite
 						public:
 
 							/**
-							 * @var  int  hash "constant" (may need to change if large map)
+							 * @var  int  hash "constant" (may need to change if width exceeds this value)
 							 */
 							static const int C;
 
@@ -44,12 +44,12 @@ namespace DStarLite
 							size_t operator()(Cell* c) const;
 					};
 
-					/*
+					/**
 					 * @var  static const int  number of cell neighbors
 					 */
 					static const unsigned int NUM_NBRS;
 
-					/*
+					/**
 					 * @var  static const double  cost of an unwalkable cell
 					 */
 					static const double COST_UNWALKABLE;
@@ -82,21 +82,21 @@ namespace DStarLite
 					void init(Cell** nbrs);
 
 					/**
-					 * Get cell neighbors.
+					 * Gets cell neighbors.
 					 *
 					 * @return  Cell**
 					 */
 					Cell** nbrs();
 
 					/**
-					 * Get x-coordinate.
+					 * Gets x-coordinate.
 					 *
 					 * @return  unsigned int
 					 */
 					unsigned int x();
 
 					/**
-					 * Get y-coordinate.
+					 * Gets y-coordinate.
 					 *
 					 * @return  unsigned int
 					 */
@@ -139,23 +139,23 @@ namespace DStarLite
 			~Map();
 
 			/**
-			 * Retrieve a cell.
+			 * Retrieves a cell.
 			 *
 			 * @param   unsigned int   row
 			 * @param   unsigned int   column
-			 * @return  Cell*
+			 * @return  Map::Cell*
 			 */
 			Cell* operator()(const unsigned int row, const unsigned int col);
 
 			/**
-			 * Number of cols.
+			 * Gets number of cols.
 			 *
 			 * @return  unsigned int
 			 */
 			unsigned int cols();
 
 			/**
-			 * Checks if movement grazes any possible blocked tiles.
+			 * Checks if movement grazes any possible unwalkable cells.
 			 *
 			 * @param   Cell*   start
 			 * @param   Cell*   destination
@@ -173,13 +173,18 @@ namespace DStarLite
 			bool has(unsigned int row, unsigned int col);
 
 			/**
-			 * Number of rows.
+			 * Gets number of rows.
 			 *
 			 * @return  unsigned int
 			 */
 			unsigned int rows();
 
 	protected:
+			
+			/**
+			 * @var  Cell***  cells of the map
+			 */
+			Cell*** _cells;
 
 			/**
 			 * @var  unsigned int columns
@@ -190,11 +195,6 @@ namespace DStarLite
 			 * @var  unsigned int  rows
 			 */
 			unsigned int _rows;
-
-			/**
-			 * @var  Cell***  cells of the map
-			 */
-			Cell*** _cells;
 	};
 };
 

@@ -8,20 +8,21 @@
  */
 #include "map.h"
 
+using namespace std;
 using namespace DStarLite;
 
-/*
+/**
  * @var  unsigned int  number of cell neighbors
  */
 const unsigned int Map::Cell::NUM_NBRS = 8;
 
-/*
+/**
  * @var  double  cost of an unwalkable tile
  */
 const double Map::Cell::COST_UNWALKABLE = 100000000.0;
 
 /**
- * @var  int  hash "constant" (may need to change if large map)
+ * @var  int  hash "constant" (may need to change if map width exceeds this value)
  */
 const int Map::Cell::Hash::C = 1000000;
 
@@ -44,6 +45,7 @@ Map::Map(unsigned int rows, unsigned int cols)
 
 		for (unsigned int j = 0; j < cols; j++)
 		{
+			// Initialize cells
 			_cells[i][j] = new Cell(j, i);
 		}
 	}
@@ -119,28 +121,25 @@ Map::Map(unsigned int rows, unsigned int cols)
  */
 Map::~Map()
 {
-	if (_rows > 0 && _cols > 0)
+	for (unsigned int i = 0; i < _rows; i++)
 	{
-		for (unsigned int i = 0; i < _rows; i++)
+		for (unsigned int j = 0; j < _cols; j++)
 		{
-			for (unsigned int j = 0; j < _cols; j++)
-			{
-				delete _cells[i][j];
-			}
-
-			delete[] _cells[i];
+			delete _cells[i][j];
 		}
 
-		delete[] _cells;
+		delete[] _cells[i];
 	}
+
+	delete[] _cells;
 }
 
 /**
- * Retrieve a cell.
+ * Retrieves a cell.
  *
  * @param   unsigned int   row
  * @param   unsigned int   column
- * @return  Cell*
+ * @return  Map::Cell*
  */
 Map::Cell* Map::operator()(const unsigned int row, const unsigned int col)
 {
@@ -148,7 +147,7 @@ Map::Cell* Map::operator()(const unsigned int row, const unsigned int col)
 }
 
 /**
- * Number of cols.
+ * Gets number of cols.
  *
  * @return  unsigned int
  */
@@ -158,7 +157,7 @@ unsigned int Map::cols()
 }
 
 /**
- * Checks if movement grazes any possible blocked cells.
+ * Checks if movement grazes any possible unwalkable cells.
  *
  * @param   Cell*   start
  * @param   Cell*   destination
@@ -193,7 +192,7 @@ bool Map::has(unsigned int row, unsigned int col)
 }
 
 /**
- * Number of rows.
+ * Gets number of rows.
  *
  * @return  unsigned int
  */
@@ -206,7 +205,7 @@ unsigned int Map::rows()
  * Constructor.
  *
  * @param   unsigned int        x-coordinate
- * @param   unsigned int        y-coordinate'
+ * @param   unsigned int        y-coordinate
  * @param   double [optional]   cost of the cell
  */				
 Map::Cell::Cell(unsigned int x, unsigned int y, double cost)
@@ -247,7 +246,7 @@ void Map::Cell::init(Cell** nbrs)
 }
 
 /**
- * Get cell neighbors.
+ * Gets cell neighbors.
  *
  * @return  Cell**
  */
@@ -257,7 +256,7 @@ Map::Cell** Map::Cell::nbrs()
 }
 
 /**
- * Get x-coordinate.
+ * Gets x-coordinate.
  *
  * @return  unsigned int
  */
@@ -267,7 +266,7 @@ unsigned int Map::Cell::x()
 }
 
 /**
- * Get y-coordinate.
+ * Gets y-coordinate.
  *
  * @return  unsigned int
  */

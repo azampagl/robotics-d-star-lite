@@ -1,6 +1,11 @@
 /**
  * DStarLite.
  *
+ * Based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by
+ * Sven Koenig and Maxim Likhachev
+ *
+ * Figure 5: D* Lite: Final Version.
+ *
  * @package		DStarLite
  * @author		Aaron Zampaglione <azampagl@gmail.com>
  * @copyright	Copyright (C) 2011 Aaron Zampaglione
@@ -8,18 +13,21 @@
  */
 #include "planner.h"
 
-using namespace DStarLite;
-
 /*
- * @var  static const double  max steps before assuming no path possible
+ * @var  static const double  max steps before assuming no solution possible
  */
 const double Planner::MAX_STEPS = 1000000;
 
 /**
+ * Constructor.
  *
+ * @param  Map*         map
+ * @param  Map::Cell*   start cell
+ * @param  Map::Cell*   goal cell
  */
 Planner::Planner(Map* map, Map::Cell* start, Map::Cell* goal)
 {
+	// Clear lists
 	_open_list.clear();
 	_open_hash.clear();
 	_path.clear();
@@ -56,8 +64,8 @@ list<Map::Cell*> Planner::path()
 /**
  * Gets/Sets a new goal.
  *
- * @param   Map::Cell*
- * @return  Map::Cell*
+ * @param   Map::Cell* [optional]   goal
+ * @return  Map::Cell*              new goal
  */
 Map::Cell* Planner::goal(Map::Cell* u)
 {
@@ -71,7 +79,7 @@ Map::Cell* Planner::goal(Map::Cell* u)
 }
 
 /**
- * Replan.
+ * Replans the path.
  *
  * @return  bool   solution found
  */
@@ -81,6 +89,7 @@ bool Planner::replan()
 	
 	bool result = _compute();
 	
+	// Couldn't find a solution
 	if ( ! result)
 	  return false;
 
@@ -91,6 +100,7 @@ bool Planner::replan()
 	Map::Cell* current = _start;
 	_path.push_back(current);
 
+	// Follow the path with the least cost until goal is reached
 	while (current != _goal)
 	{
 		if (Math::equals(_g(current), Math::INFINITY))
@@ -122,10 +132,10 @@ bool Planner::replan()
 }
 
 /**
- * Gets/Sets a new start.
+ * Gets/Sets start.
  *
- * @param   Map::Cell*
- * @return  Map::Cell*
+ * @param   Map::Cell* [optional]   new start
+ * @return  Map::Cell*              start
  */
 Map::Cell* Planner::start(Map::Cell* u)
 {
@@ -138,7 +148,11 @@ Map::Cell* Planner::start(Map::Cell* u)
 }
 
 /**
+ * Update map.
  *
+ * @param   Map::Cell*   cell to update
+ * @param   double       new cost of the cell
+ * @return  void
  */
 void Planner::update(Map::Cell* u, double cost)
 {
@@ -156,7 +170,10 @@ void Planner::update(Map::Cell* u, double cost)
 }
 
 /**
+ * Generates a cell.
  *
+ * @param   Map::Cell*
+ * @return  void
  */
 void Planner::_cell(Map::Cell* u)
 {
@@ -168,7 +185,9 @@ void Planner::_cell(Map::Cell* u)
 }
 
 /**
+ * Computes shortest path.
  *
+ * @return  bool   successful
  */
 bool Planner::_compute()
 {
@@ -230,7 +249,11 @@ bool Planner::_compute()
 }
 
 /**
- *
+ * Calculates the cost from one cell to another cell.
+ * 
+ * @param   Map::Cell*   cell a
+ * @param   Map::Cell*   cell b
+ * @return  double       cost between a and b
  */
 double Planner::_cost(Map::Cell* a, Map::Cell* b)
 {
@@ -250,7 +273,11 @@ double Planner::_cost(Map::Cell* a, Map::Cell* b)
 }
 
 /**
- *
+ * Gets/Sets g value for a cell.
+ * 
+ * @param   Map::Cell*          cell to retrieve/update
+ * @param   double [optional]   new g value
+ * @return  double              g value 
  */
 double Planner::_g(Map::Cell* u, double value)
 {
@@ -266,7 +293,11 @@ double Planner::_g(Map::Cell* u, double value)
 }
 
 /**
+ * Calculates heuristic between two cells (manhattan distance).
  *
+ * @param   Map::Cell*   cell a
+ * @param   Map::Cell*   cell b
+ * @return  double       heuristic value
  */
 double Planner::_h(Map::Cell* a, Map::Cell* b)
 {
@@ -284,7 +315,10 @@ double Planner::_h(Map::Cell* a, Map::Cell* b)
 }
 
 /**
+ * Calculates key value for cell.
  *
+ * @param   Map::Cell*            cell to calculate for
+ * @return  pair<double,double>   key value
  */
 pair<double,double> Planner::_k(Map::Cell* u)
 {
@@ -295,7 +329,11 @@ pair<double,double> Planner::_k(Map::Cell* u)
 }
 
 /**
+ * Inserts cell into open list.
  *
+ * @param   Map::Cell*            cell to insert
+ * @param   pair<double,double>   key vakue for the cell
+ * @return  void
  */
 void Planner::_list_insert(Map::Cell* u, pair<double,double> k)
 {
@@ -304,7 +342,10 @@ void Planner::_list_insert(Map::Cell* u, pair<double,double> k)
 }
 
 /**
+ * Removes cell from the open list.
  *
+ * @param   Map::Cell*   cell to remove
+ * @return  void
  */
 void Planner::_list_remove(Map::Cell* u)
 {
@@ -313,7 +354,11 @@ void Planner::_list_remove(Map::Cell* u)
 }
 
 /**
- *
+ * Gets/Sets rhs value for a cell.
+ * 
+ * @param   Map::Cell*          cell to retrieve/update
+ * @param   double [optional]   new rhs value
+ * @return  double              rhs value
  */
 double Planner::_rhs(Map::Cell* u, double value)
 {
@@ -332,7 +377,10 @@ double Planner::_rhs(Map::Cell* u, double value)
 }
 
 /**
+ * Updates cell.
  *
+ * @param   Map::Cell*   cell to update
+ * @return  void
  */
 void Planner::_update(Map::Cell* u)
 {
@@ -369,7 +417,7 @@ void Planner::_update(Map::Cell* u)
 		_list_remove(u);
 	}
 
-	if (! Math::equals(_g(u), _rhs(u)))
+	if ( ! Math::equals(_g(u), _rhs(u)))
 	{
 		_list_insert(u, _k(u));
 	}

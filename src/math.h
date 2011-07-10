@@ -9,8 +9,6 @@
 #ifndef DSTARLITE_MATH_H
 #define DSTARLITE_MATH_H
 
-//#include <math.h>
-//#include <float.h>
 #include <cmath>
 #include <cfloat>
 
@@ -20,23 +18,23 @@ namespace DStarLite
 	{
 		public:
 
-			/*
+			/**
 			 * @var  double  INFINITY
 			 */
 			static const double INFINITY;
 
-			/*
+			/**
 			 * @var  double  PI
 			 */
 			static const double PI;
 
-			/*
+			/**
 			 * @var  double  SQRT2
 			 */
 			static const double SQRT2;
 
 			/**
-			 * Convert degrees to radians.
+			 * Converts degrees to radians.
 			 *
 			 * @param   double   degrees
 			 * @return  double   radians
@@ -44,7 +42,7 @@ namespace DStarLite
 			static double deg2rad(double degrees);
 
 			/**
-			 * Convert degrees to a signed degree (-180 < degrees <= 180)
+			 * Converts degrees to a signed degree (-180 < degrees <= 180)
 			 *
 			 * @param   double   degrees
 			 * @return  double   degrees
@@ -84,7 +82,7 @@ namespace DStarLite
 			static bool less(double a, double b, double precision = 0.000000000000001);
 
 			/**
-			 * Convert radians to degrees.
+			 * Converts radians to degrees.
 			 *
 			 * @param   double   radians
 			 * @return  double   degrees
@@ -92,7 +90,7 @@ namespace DStarLite
 			static double rad2deg(double radians);
 
 			/**
-			 * Convert radians to a signed radians value (-PI < degrees <= PI)
+			 * Converts radians to a signed radians value (-PI < degrees <= PI)
 			 *
 			 * @param   double   radians
 			 * @return  double   radians

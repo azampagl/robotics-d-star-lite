@@ -8,12 +8,20 @@
  */
 #include "widget_real.h"
 
-using namespace DStarLite;
-
+/**
+ * Constructor.
+ *
+ * @see  parent
+ */
 RealWidget::RealWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h)
 {
 }
 
+/**
+ * Draws basic map and overlaying graphics (path, robot, etc).
+ *
+ * @see  parent
+ */
 void RealWidget::draw()
 {
 	// Keep drawings withing widget

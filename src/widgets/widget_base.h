@@ -19,34 +19,46 @@
 
 #include "../map.h"
 
+using namespace DStarLite;
+
 namespace DStarLite
 {
 	class BaseWidget : public Fl_Widget
 	{
 		public:
 
-			/*
-			 * @var  unsigned char*  map data
-			 */
-			unsigned char* data;
-
-			/*
-			 * @var  int  radius of the robot (in pixels)
-			 */
-			int robot_radius;
-
-			/*
+			/**
 			 * @var  Map::Cell*  current position
 			 */
 			Map::Cell* current;
+
+			/**
+			 * @var  unsigned char*  map data
+			 */
+			unsigned char* data;
 
 			/*
 			 * @var  Map::Cell*  goal position
 			 */
 			Map::Cell* goal;
 
+			/**
+			 * @var  int  radius of the robot (in pixels)
+			 */
+			int robot_radius;
+
+			/**
+			 * Constructor.
+			 *
+			 * @see  parent
+			 */
 			BaseWidget(int x, int y, int w, int h);
 
+			/**
+			 * Deconstructor.
+			 *
+			 * @see  parent
+			 */
 			~BaseWidget();
 	};
 };

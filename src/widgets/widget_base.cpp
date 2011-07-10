@@ -8,12 +8,20 @@
  */
 #include "widget_base.h"
 
-using namespace DStarLite;
-
+/**
+ * Constructor.
+ *
+ * @see  parent
+ */
 BaseWidget::BaseWidget(int x, int y, int w, int h) : Fl_Widget(x, y, w, h)
 {
 }
 
+/**
+ * Deconstructor.
+ *
+ * @see  parent
+ */
 BaseWidget::~BaseWidget()
 {
 	delete data;

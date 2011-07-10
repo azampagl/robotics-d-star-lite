@@ -8,12 +8,20 @@
  */
 #include "widget_robot.h"
 
-using namespace DStarLite;
-
+/**
+ * Constructor.
+ *
+ * @see  parent
+ */
 RobotWidget::RobotWidget(int x, int y, int w, int h) : BaseWidget(x, y, w, h)
 {
 }
 
+/**
+ * Draws basic map and overlaying graphics (path, robot, etc).
+ *
+ * @see  parent
+ */
 void RobotWidget::draw()
 {
 	// Keep drawings within the widget

@@ -13,12 +13,13 @@
 #include <FL/FL_BMP_Image.H>
 #include <FL/FL_Button.H>
 #include <FL/Fl_Double_Window.H>
-//#include <FL/FL_Window.H>
 
 #include "planner.h"
 #include "map.h"
 #include "widgets/widget_real.h"
 #include "widgets/widget_robot.h"
+
+using namespace DStarLite;
 
 namespace DStarLite
 {
@@ -44,14 +45,14 @@ namespace DStarLite
 					char* robot_bitmap;
 
 					/**
-					 * @var  pair<int,int>  start position
+					 * @var  pair<unsigned int, unsigned int>  start position
 					 */
-					pair<int,int> start;
+					pair<unsigned int, unsigned int> start;
 
 					/**
-					 * @var  pair<int,int>  goal position
+					 * @var pair<unsigned int, unsigned int>  goal position
 					 */
-					pair<int,int> goal;
+					pair<unsigned int, unsigned int> goal;
 
 					/**
 					 * @var  unsigned int  scanner radius
@@ -85,7 +86,11 @@ namespace DStarLite
 			static const double UNWALKABLE_CELL;
 
 			/**
-			 * 
+			 * Executes the simulator when the start button is clicked.
+			 *
+			 * @param   Fl_Widget*   widget
+			 * @param   void*        simulator
+			 * @return  void
 			 */
 			static void callback(Fl_Widget* w, void* p);
 
@@ -103,26 +108,28 @@ namespace DStarLite
 			~Simulator();
 
 			/**
-			 * Draw.
+			 * Draws the window.
 			 *
 			 * @return  int
 			 */
 			int draw();
 
 			/**
-			 * Execute.
+			 * Main execution method.
 			 *
 			 * @return  int  successfull
 			 */
 			int execute();
 
 			/**
-			 * 
+			 * Init the simulator.
+			 *
+			 * @return  bool  initialized already
 			 */
 			bool init();
 
 			/**
-			 * Redraw.
+			 * Redraws the window.
 			 *
 			 * @return  void
 			 */
@@ -138,17 +145,12 @@ namespace DStarLite
 		protected:
 
 			/**
-			 * @var  char*  name of the simulator
-			 */
-			char* _name;
-
-			/**
 			 * @var  Config  simulator config options
 			 */
 			Config _config;
 
 			/**
-			 *
+			 * @var  bool  simulator initialized
 			 */
 			bool _init;
 
@@ -158,14 +160,14 @@ namespace DStarLite
 			Map* _map;
 
 			/**
+			 * @var  char*  name of the simulator
+			 */
+			char* _name;
+
+			/**
 			 * @var  Planner*  planner
 			 */
 			Planner* _planner;
-
-			/**
-			 * @var  Fl_Window*  window
-			 */
-			Fl_Window* _window;
 
 			/**
 			 * @var  RealWidget*  real widget
@@ -181,6 +183,11 @@ namespace DStarLite
 			 * @var  Fl_Button*  start button
 			 */
 			Fl_Button* _start_button;
+
+			/**
+			 * @var  Fl_Window*  window
+			 */
+			Fl_Window* _window;
 	};
 };
 

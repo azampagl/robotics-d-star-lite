@@ -8,8 +8,6 @@
  */
 #include "simulator.h"
 
-using namespace DStarLite;
-
 /**
  * @var  double  cost difference between bitmap and tile;
  */
@@ -35,6 +33,13 @@ const int Simulator::WINDOW_HEIGHT_PADDING = 10;
  */
 const int Simulator::WINDOW_IMG_PADDING = 10;
 
+/**
+ * Executes the simulator when the start button is clicked.
+ *
+ * @param   Fl_Widget*   widget
+ * @param   void*        simulator
+ * @return  void
+ */
 void Simulator::callback(Fl_Widget* w, void* p)
 {
 	Simulator* simulator = (Simulator*) p;
@@ -64,9 +69,10 @@ Simulator::Simulator(char* name, Config config)
 	// Set config
 	_config = config;
 
+	// Not initialized yet (after start is clicked)
 	_init = false;
 
-	// Make two bitmaps
+	// Make two bitmaps images
 	Fl_BMP_Image real_bitmap(config.real_bitmap);
 	Fl_BMP_Image robot_bitmap(config.robot_bitmap);
 
@@ -86,6 +92,7 @@ Simulator::Simulator(char* name, Config config)
 	// Calculate window width and height
 	int window_width = img_width * 2 + Simulator::WINDOW_IMG_PADDING + Simulator::WINDOW_WIDTH_PADDING * 2;
 
+	// Make sure the button isn't larger than the window
 	if (window_width < button_width)
 	{
 		window_width = button_width * 2;
@@ -93,18 +100,22 @@ Simulator::Simulator(char* name, Config config)
 
 	int window_height = img_height + Simulator::WINDOW_HEIGHT_PADDING * 3 + button_height;
 
+	// Make main window
 	_window = new Fl_Double_Window(window_width, window_height, name);
 	_window->box(FL_FLAT_BOX);
 	_window->begin();
 
+	// Make real and robot widgets
 	_real_widget = new RealWidget(Simulator::WINDOW_WIDTH_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
 	_real_widget->box(FL_NO_BOX);
 	_robot_widget = new RobotWidget(Simulator::WINDOW_WIDTH_PADDING + img_width + Simulator::WINDOW_IMG_PADDING, Simulator::WINDOW_HEIGHT_PADDING, img_width, img_height);
 	_robot_widget->box(FL_NO_BOX);
 
+	// Make start button
 	_start_button = new Fl_Button((int)((window_width / 2) - (button_width / 2)), img_height + Simulator::WINDOW_HEIGHT_PADDING * 2, button_width, button_height, "Start");
 	_start_button->callback(Simulator::callback, (void*) this);
 
+	// Prepare real and robot image buffers
 	_real_widget->data = new unsigned char[img_width * img_height];
 	_robot_widget->data = new unsigned char[img_width * img_height];
 
@@ -112,7 +123,9 @@ Simulator::Simulator(char* name, Config config)
 	{
 		for (int j = 0; j < img_width; j++)
 		{
+			// Index key
 			int k1 = (i * img_width) + j;
+			// Depth key
 			int k2 = (i * img_width * img_depth) + (j * img_depth);
 
 			if (img_depth == 1)
@@ -122,9 +135,11 @@ Simulator::Simulator(char* name, Config config)
 			}
 			else if (img_depth == 3)
 			{
+				// Convert to grayscale
 				_real_widget->data[k1] = (unsigned char) (0.3 * real_bitmap.array[k2] + 0.59 * real_bitmap.array[k2 + 1] + 0.11 * real_bitmap.array[k2 + 2] + 0.5);
 				_robot_widget->data[k1] = (unsigned char) (0.3 * robot_bitmap.array[k2] + 0.59 * robot_bitmap.array[k2 + 1] + 0.11 * robot_bitmap.array[k2 + 2] + 0.5);
 			}
+			// Unsupported depth
 			else
 			{
 				throw;
@@ -134,14 +149,16 @@ Simulator::Simulator(char* name, Config config)
 	
 	_window->end();
 
-	//
+	// Set the robot radius
 	_real_widget->robot_radius = _robot_widget->robot_radius = 2;
 
-	//
+	// Sert the scan radius
 	_robot_widget->scan_radius = config.scan_radius;
 
 	// Make the map
 	_map = new Map(img_height, img_width);
+
+	// Set current and goal position
 	_real_widget->current = _robot_widget->current = (*_map)(config.start.first, config.start.second);
 	_real_widget->goal = _robot_widget->goal = (*_map)(config.goal.first, config.goal.second);
 
@@ -153,6 +170,7 @@ Simulator::Simulator(char* name, Config config)
 			int k = (i * img_width) + j;
 			double v = (double) _robot_widget->data[k];
 
+			// Cell is unwalkable
 			if (v == Simulator::UNWALKABLE_CELL)
 			{
 				v = Map::Cell::COST_UNWALKABLE;
@@ -169,6 +187,7 @@ Simulator::Simulator(char* name, Config config)
 	// Make planner
 	_planner = new Planner(_map, _robot_widget->current, _robot_widget->goal);
 
+	// Push start position
 	_real_widget->path_traversed.push_back(_planner->start());
 }
 
@@ -183,7 +202,7 @@ Simulator::~Simulator()
 }
 
 /**
- * Draw.
+ * Draws the window.
  *
  * @return  int
  */
@@ -195,19 +214,9 @@ int Simulator::draw()
 }
 
 /**
- * Draw.
+ * Main execution method.
  *
- * @return  void
- */
-void Simulator::redraw()
-{
-	_window->redraw();
-}
-
-/**
- * Execute.
- *
- * @return  int
+ * @return  int  successfull
  */
 int Simulator::execute()
 {
@@ -217,8 +226,10 @@ int Simulator::execute()
 		return 1;
 	}
 
+	// Check if map was updated
 	if (update_map())
 	{
+		// Replan the path
 		if ( ! _planner->replan())
 			return -1;
 
@@ -230,6 +241,7 @@ int Simulator::execute()
 		}
 	}
 
+	// Step
 	_real_widget->path_traversed.push_back(_robot_widget->path_planned.front());
 	_planner->start(_robot_widget->path_planned.front());
 	_real_widget->current = _robot_widget->current = _planner->start();
@@ -239,6 +251,9 @@ int Simulator::execute()
 }
 
 /**
+ * Init the simulator.
+ *
+ * @return  bool  initialized already
  */
 bool Simulator::init()
 {
@@ -251,6 +266,16 @@ bool Simulator::init()
 	_robot_widget->path_planned = _planner->path();
 
 	return false;
+}
+
+/**
+ * Redraws the window.
+ *
+ * @return  void
+ */
+void Simulator::redraw()
+{
+	_window->redraw();
 }
 
 /*
@@ -268,6 +293,7 @@ bool Simulator::update_map()
 	x = current->x();
 	y = current->y();
 
+	// Radius^2
 	unsigned int radius = _robot_widget->scan_radius;
 	unsigned int radius2 = radius * radius;
 
@@ -275,6 +301,7 @@ bool Simulator::update_map()
 	rows = _map->rows();
 	cols = _map->cols();
 
+	// Make an imaginary box around the scan circle
 	unsigned int max_x, max_y, min_x, min_y;
 	max_x = (x + radius < cols) ? x + radius : cols;
 	max_y = (y + radius < rows) ? y + radius : rows;
@@ -294,6 +321,7 @@ bool Simulator::update_map()
 			{
 				unsigned int k = (i * cols) + j;
 
+				// Check if an update is required
 				if (_robot_widget->data[k] != _real_widget->data[k])
 				{
 					error = true;
