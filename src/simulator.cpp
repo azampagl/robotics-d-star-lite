@@ -264,10 +264,10 @@ bool Simulator::update_map()
 
 	Map::Cell* current = _robot_widget->current;
 
-	unsigned int current_x, current_y;
-	current_x = current->x();
-	current_y = current->y();
-/*
+	unsigned int x, y;
+	x = current->x();
+	y = current->y();
+
 	unsigned int radius = _robot_widget->scan_radius;
 	unsigned int radius2 = radius * radius;
 
@@ -286,7 +286,7 @@ bool Simulator::update_map()
 		int dy = y - i;
 		unsigned int dy2 = dy * dy;
 
-		for (unsigned int j = min_x; j < max_y; j++)
+		for (unsigned int j = min_x; j < max_x; j++)
 		{
 			int dx = x - j;
 			
@@ -311,63 +311,6 @@ bool Simulator::update_map()
 					}
 
 					_planner->update((*_map)(i, j), v);
-				}
-			}
-		}
-	}
-
-	return error;*/
-
-	double dov = _config.scan_radius;
-	double fov = 2 * Math::PI;
-	double orientation = 0;
-
-	int width = _map->cols();
-	int height = _map->rows();
-
-	bool border = false;
-	bool stop = false;
-
-	int x;
-	int y;
-
-	for (double i = orientation - fov / 2; i <= orientation + fov / 2; i += 0.01)
-	{
-		stop = false;
-		border = false;
-
-		for (double j = 0; (j <= dov && ! stop); j += 0.1)
-		{
-			x = (int) ((j * cos(i)) + current_x);
-			y = (int) (-(j * sin(i)) + current_y);
-
-			if (x >= width || y >= height || x < 0 || y < 0)
-			{
-				border = true;
-			}
-
-			if ( ! border && ! stop)
-			{
-				unsigned int k = (y * width) + x;
-
-				if (_robot_widget->data[k] != _real_widget->data[k])
-				{
-					error = true;
-
-					_robot_widget->data[k] = _real_widget->data[k];
-					double v = (double) _robot_widget->data[k];
-
-					if (v == Simulator::UNWALKABLE_CELL)
-					{
-						v = Map::Cell::COST_UNWALKABLE;
-						stop = true;
-					}
-					else
-					{
-						v = Simulator::COST_DIFFERENCE - v + 1.0;
-					}
-
-					_planner->update((*_map)(y, x), v);
 				}
 			}
 		}
