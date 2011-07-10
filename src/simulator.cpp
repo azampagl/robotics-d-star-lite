@@ -39,11 +39,14 @@ void Simulator::callback(Fl_Widget* w, void* p)
 {
 	Simulator* simulator = (Simulator*) p;
 
+	if (simulator->init())
+		return;
+
 	while (simulator->execute() == 0)
 	{
 		simulator->redraw();
 		Fl::check();
-		Fl::wait(0.05);
+		Fl::wait(0.08);
 	}
 }
 
@@ -60,6 +63,8 @@ Simulator::Simulator(char* name, Config config)
 
 	// Set config
 	_config = config;
+
+	_init = false;
 
 	// Make two bitmaps
 	Fl_BMP_Image real_bitmap(config.real_bitmap);
@@ -230,6 +235,21 @@ int Simulator::execute()
 	return 0;
 }
 
+/**
+ */
+bool Simulator::init()
+{
+	if (_init)
+		return true;
+
+	_init = true;
+
+	_planner->replan();
+	_robot_widget->path_planned = _planner->path();
+
+	return false;
+}
+
 /*
  * Scans map for updated tiles.
  *
@@ -237,22 +257,76 @@ int Simulator::execute()
  */
 bool Simulator::update_map()
 {
-	return true;
-	/*bool error = false;
+	bool error = false;
 
-	Tile* position = _traversed_path.back();
+	Map::Cell* current = _robot_widget->current;
+
+	unsigned int current_x, current_y;
+	current_x = current->x();
+	current_y = current->y();
+/*
+	unsigned int radius = _robot_widget->scan_radius;
+	unsigned int radius2 = radius * radius;
+
+	unsigned int rows, cols;
+	rows = _map->rows();
+	cols = _map->cols();
+
+	unsigned int max_x, max_y, min_x, min_y;
+	max_x = (x + radius < cols) ? x + radius : cols;
+	max_y = (y + radius < rows) ? y + radius : rows;
+	min_x = (x - radius > 0) ? x - radius : 0;
+	min_y = (y - radius > 0) ? y - radius : 0;
+
+	for (unsigned int i = min_y; i < max_y; i++)
+	{
+		int dy = y - i;
+		unsigned int dy2 = dy * dy;
+
+		for (unsigned int j = min_x; j < max_y; j++)
+		{
+			int dx = x - j;
+			
+			if ((dx * dx) + dy2 < radius2)
+			{
+				unsigned int k = (i * cols) + j;
+
+				if (_robot_widget->data[k] != _real_widget->data[k])
+				{
+					error = true;
+
+					_robot_widget->data[k] = _real_widget->data[k];
+					double v = (double) _robot_widget->data[k];
+
+					if (v == Simulator::UNWALKABLE_CELL)
+					{
+						v = Map::Cell::COST_UNWALKABLE;
+					}
+					else
+					{
+						v = Simulator::COST_DIFFERENCE - v + 1.0;
+					}
+
+					_planner->update((*_map)(i, j), v);
+				}
+			}
+		}
+	}
+
+	return error;*/
+
 	double dov = _config.scan_radius;
 	double fov = 2 * Math::PI;
 	double orientation = 0;
 
-	int width = _robot_map->cols();
-	int height = _robot_map->rows();
+	int width = _map->cols();
+	int height = _map->rows();
 
 	bool border = false;
 	bool stop = false;
 
-	double x;
-	double y;
+	int x;
+	int y;
 
 	for (double i = orientation - fov / 2; i <= orientation + fov / 2; i += 0.01)
 	{
@@ -261,27 +335,40 @@ bool Simulator::update_map()
 
 		for (double j = 0; (j <= dov && ! stop); j += 0.1)
 		{
-			x =  (j * cos(i)) + position->x;
-			y = -(j * sin(i)) + position->y;
+			x = (int) ((j * cos(i)) + current_x);
+			y = (int) (-(j * sin(i)) + current_y);
 
-			if (x >= width || y >= height || x < 0.0 || y < 0.0)
+			if (x >= width || y >= height || x < 0 || y < 0)
+			{
 				border = true;
+			}
 
 			if ( ! border && ! stop)
 			{
-				if ((*_robot_map)((int)y,(int)x)->cost != (*_real_map)((int)y,(int)x)->cost)
+				unsigned int k = (y * width) + x;
+
+				if (_robot_widget->data[k] != _real_widget->data[k])
 				{
-					error = true;					
-					_dstar->update((*_robot_map)((int)y,(int)x), (*_real_map)((int)y,(int)x)->cost);
-				}
-				if ((*_real_map)((int)y,(int)x)->cost >= Tile::UNWALKABLE)
-				{
-					stop = true;
+					error = true;
+
+					_robot_widget->data[k] = _real_widget->data[k];
+					double v = (double) _robot_widget->data[k];
+
+					if (v == Simulator::UNWALKABLE_CELL)
+					{
+						v = Map::Cell::COST_UNWALKABLE;
+						stop = true;
+					}
+					else
+					{
+						v = Simulator::COST_DIFFERENCE - v + 1.0;
+					}
+
+					_planner->update((*_map)(y, x), v);
 				}
 			}
 		}
 	}
 
-	return error;*/
-	return 0;
+	return error;
 }

@@ -116,6 +116,11 @@ namespace DStarLite
 			int execute();
 
 			/**
+			 * 
+			 */
+			bool init();
+
+			/**
 			 * Redraw.
 			 *
 			 * @return  void
@@ -140,6 +145,11 @@ namespace DStarLite
 			 * @var  Config  simulator config options
 			 */
 			Config _config;
+
+			/**
+			 *
+			 */
+			bool _init;
 
 			/**
 			 * @var  Map*  real map, with all obstacles

@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 
 	config.real_bitmap = "../../../../maps/map-01-real.bmp";
 	//config.robot_bitmap = "../../../../maps/map-01-robot.bmp";
-	config.robot_bitmap = "../../../../maps/map-01-real.bmp";
+	config.robot_bitmap = "../../../../maps/map-01-robot.bmp";
 
 	config.start.first = 0;
 	config.start.second = 0;
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	//config.goal.first = 19;
 	//config.goal.second = 19;
 
-	config.scan_radius = 20;
+	config.scan_radius = 50;
 
 	Simulator sim = Simulator("Simulator 1", config);
 
