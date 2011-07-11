@@ -155,15 +155,6 @@ namespace DStarLite
 			unsigned int cols();
 
 			/**
-			 * Checks if movement grazes any possible unwalkable cells.
-			 *
-			 * @param   Cell*   start
-			 * @param   Cell*   destination
-			 * @return  bool
-			 */
-			bool grazes(Cell* a, Cell* b);
-
-			/**
 			 * Checks if row/col exists.
 			 *
 			 * @param   unsigned int   row
