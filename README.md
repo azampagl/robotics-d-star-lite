@@ -41,14 +41,14 @@ The "maps" used for this project are grayscale bitmaps.  The darker the pixel th
 
 To run the program, the following arguments must be passed via command line.
 
-+ *[char\*]* Name of the window.
-+ *[char\*]* Location of the real map.
-+ *[char\*]* Location of the robot map.
-+ *[int]* Start x-coordinate.
-+ *[int]* Start y-coordinate.
-+ *[int]* Goal x-coordinate.
-+ *[int]* Goal y-coordinate.
-+ *[int]* Scanner radius.
++ _[char\*]_ Name of the window.
++ _[char\*]_ Location of the real map.
++ _[char\*]_ Location of the robot map.
++ _[int]_ Start x-coordinate.
++ _[int]_ Start y-coordinate.
++ _[int]_ Goal x-coordinate.
++ _[int]_ Goal y-coordinate.
++ _[int]_ Scanner radius.
 
 References
 ---------------------
