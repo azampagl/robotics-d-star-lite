@@ -157,29 +157,6 @@ unsigned int Map::cols()
 }
 
 /**
- * Checks if movement grazes any possible unwalkable cells.
- *
- * @param   Cell*   start
- * @param   Cell*   destination
- * @return  bool
- */
-bool Map::grazes(Cell* a, Cell* b)
-{
-	int dx = b->x() - a->x();
-	int dy = b->y() - a->y();
-
-	// Not considered grazing if not a diagonal move
-	if ((abs(dx) + abs(dy)) == 1)
-		return false;
-
-	// Verify that it is in the bounds of the map
-	if ( ( ! has(a->y(), a->x() + dx)) ||  ( ! has(a->y() + dy, a->x())))
-		return true;
-
-	return (_cells[a->y()][a->x() + dx]->cost == Cell::COST_UNWALKABLE || _cells[a->y() + dy][a->x()]->cost == Cell::COST_UNWALKABLE);
-}
-
-/**
  * Checks if row/col exists.
  *
  * @param   unsigned int   row
