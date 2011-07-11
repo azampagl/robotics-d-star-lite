@@ -215,6 +215,14 @@ namespace DStarLite
 			void _list_update(Map::Cell* u, pair<double,double> k);
 
 			/**
+			 * Finds the minimum successor cell.
+			 *
+			 * @param   Map::Cell*   root
+			 * @return  Map::Cell*   successor
+			 */
+			Map::Cell* _min_succ(Map::Cell* u);
+
+			/**
 			 * Gets/Sets rhs value for a cell.
 			 * 
 			 * @param   Map::Cell*          cell to retrieve/update

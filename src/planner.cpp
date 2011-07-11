@@ -106,31 +106,8 @@ bool Planner::replan()
 		if (current == NULL || Math::equals(_g(current), Math::INFINITY))
 			return false;
 
-		nbrs = current->nbrs();
-		min_cell = NULL;
-		min_cost = tmp_cost = Math::INFINITY;
+		current = _min_succ(current);
 
-		for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
-		{
-			if (nbrs[i] != NULL)
-			{
-				tmp_cost = _cost(current, nbrs[i]);
-				tmp_g = _g(nbrs[i]);
-
-				if (Math::equals(tmp_cost, Math::INFINITY) || Math::equals(tmp_g, Math::INFINITY))
-					continue;
-
-				tmp_cost += tmp_g;
-
-				if (Math::less(tmp_cost, min_cost))
-				{
-					min_cell = nbrs[i];
-					min_cost = tmp_cost;
-				}
-			}
-		}
-
-		current = min_cell;
 		_path.push_back(current);
 	}
 
@@ -170,6 +147,8 @@ void Planner::update(Map::Cell* u, double cost)
 	_last = _start;
 
 	_cell(u);
+
+	double cost_old = u->cost;
 	u->cost = cost;
 
 	_update(u);
@@ -426,6 +405,44 @@ void Planner::_list_update(Map::Cell* u, pair<double,double> k)
 
 	_open_list.erase(pos1);
 	_open_hash[u] = _open_list.insert(pos2, OL_PAIR(k, u));
+}
+
+/**
+ * Finds the minimum successor cell.
+ *
+ * @param   Map::Cell*   root
+ * @return  Map::Cell*   successor
+ */
+Map::Cell* Planner::_min_succ(Map::Cell* u)
+{
+	Map::Cell** nbrs = u->nbrs();
+
+	double tmp_cost, tmp_g;
+	
+	Map::Cell* min_cell = NULL;
+	double min_cost = Math::INFINITY;
+
+	for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+	{
+		if (nbrs[i] != NULL)
+		{
+			tmp_cost = _cost(u, nbrs[i]);
+			tmp_g = _g(nbrs[i]);
+
+			if (Math::equals(tmp_cost, Math::INFINITY) || Math::equals(tmp_g, Math::INFINITY))
+				continue;
+			
+			tmp_cost += tmp_g;
+
+			if (Math::less(tmp_cost, min_cost))
+			{
+				min_cost = tmp_cost;
+				min_cell = nbrs[i];
+			}
+		}
+	}
+
+	return min_cell;
 }
 
 /**
