@@ -206,6 +206,14 @@ namespace DStarLite
 			void _list_remove(Map::Cell* u);
 
 			/**
+			 * Finds the minimum successor cell.
+			 *
+			 * @param   Map::Cell*                root
+			 * @return  pair<Map::Cell*,double>   successor
+			 */
+			pair<Map::Cell*,double> Planner::_min_succ(Map::Cell* u);	
+
+			/**
 			 * Gets/Sets rhs value for a cell.
 			 * 
 			 * @param   Map::Cell*          cell to retrieve/update
