@@ -9,7 +9,7 @@ D* Lite (D Star Lite)
 Requirements
 ---------------------
 
-If you plan on building the code, you will need the following
+If you plan on building the code yourself, you will need the following:
 
 + VC++ or GCC
 + FLTK 1.3
