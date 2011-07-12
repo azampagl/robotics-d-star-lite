@@ -222,6 +222,7 @@ int Simulator::execute()
 {
 	if (_planner->start() == _planner->goal())
 	{
+		fl_alert("Goal Reached!");
 		_real_widget->current = _robot_widget->current = _planner->goal();
 		return 1;
 	}

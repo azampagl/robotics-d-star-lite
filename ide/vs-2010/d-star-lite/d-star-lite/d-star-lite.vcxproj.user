@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>"Simulator 1" "../../../../maps/map-03-real.bmp" "../../../../maps/map-03-robot.bmp" 0 0 249 249 30</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>"Simulator 1" "../../../../maps/map-03-real.bmp" "../../../../maps/map-03-robot.bmp" 0 0 249 249 100</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
