@@ -231,7 +231,10 @@ int Simulator::execute()
 	{
 		// Replan the path
 		if ( ! _planner->replan())
-			return -1;
+		{
+			fl_alert("No Solution Found!");
+			throw;
+		}
 
 		_robot_widget->path_planned = _planner->path();
 
@@ -262,7 +265,12 @@ bool Simulator::init()
 
 	_init = true;
 
-	_planner->replan();
+	if ( ! _planner->replan())
+	{
+		fl_alert("No Solution Found!");
+		throw;
+	}
+
 	_robot_widget->path_planned = _planner->path();
 
 	return false;

@@ -145,6 +145,7 @@ void Planner::update(Map::Cell* u, double cost)
 	_cell(u);
 
 	double cost_old = u->cost;
+	double cost_new = cost;
 	u->cost = cost;
 
 	Map::Cell** nbrs = u->nbrs();
@@ -154,14 +155,19 @@ void Planner::update(Map::Cell* u, double cost)
 	{
 		if (nbrs[i] != NULL)
 		{
-			if (Math::greater(cost_old, u->cost))
+			u->cost = cost_old;
+			double tmp_cost_old = _cost(u, nbrs[i]);
+			u->cost = cost_new;
+			double tmp_cost_new = _cost(u, nbrs[i]);
+
+			if ( ! (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(tmp_cost_new, Math::INFINITY)) && Math::greater(tmp_cost_old, tmp_cost_new))
 			{
 				if (u != _goal)
 				{
-					_rhs(u, min(_rhs(u), (_cost(u, nbrs[i]) + _g(nbrs[i]))));
+					_rhs(u, min(_rhs(u), (tmp_cost_new + _g(nbrs[i]))));
 				}
 			}
-			else if (Math::equals(_rhs(u), (cost_old + _g(nbrs[i]))))
+			else if ((Math::equals(_rhs(u), Math::INFINITY) && (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(_g(nbrs[i]), Math::INFINITY))) || Math::equals(_rhs(u), (tmp_cost_old + _g(nbrs[i]))))
 			{
 				if (u != _goal)
 				{
@@ -178,14 +184,19 @@ void Planner::update(Map::Cell* u, double cost)
 	{
 		if (nbrs[i] != NULL)
 		{
-			if (Math::greater(cost_old, u->cost))
+			u->cost = cost_old;
+			double tmp_cost_old = _cost(u, nbrs[i]);
+			u->cost = cost_new;
+			double tmp_cost_new = _cost(u, nbrs[i]);
+
+			if ( ! (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(tmp_cost_new, Math::INFINITY)) && Math::greater(tmp_cost_old, tmp_cost_new))
 			{
 				if (nbrs[i] != _goal)
 				{
-					_rhs(nbrs[i], min(_rhs(nbrs[i]), (_cost(nbrs[i], u) + _g(u))));
+					_rhs(nbrs[i], min(_rhs(nbrs[i]), (tmp_cost_new + _g(u))));
 				}
 			}
-			else if (Math::equals(_rhs(nbrs[i]), (cost_old + _g(u))))
+			else if ((Math::equals(_rhs(nbrs[i]), Math::INFINITY) && (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(_g(u), Math::INFINITY))) || Math::equals(_rhs(nbrs[i]), (tmp_cost_old + _g(u))))
 			{
 				if (nbrs[i] != _goal)
 				{
