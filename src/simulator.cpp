@@ -83,7 +83,10 @@ Simulator::Simulator(char* name, Config config)
 
 	// Make sure the real image and the robot's image are the same dimensions
 	if (img_width != robot_bitmap.w() || img_height != robot_bitmap.h() || img_depth != robot_bitmap.d())
+	{
+		fl_alert("Invalid Files or Bitmaps Are Different Sizes!");
 		throw;
+	}
 
 	// Button width and height
 	int button_width = 100;
