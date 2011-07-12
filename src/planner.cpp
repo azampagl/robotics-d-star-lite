@@ -41,7 +41,7 @@ Planner::Planner(Map* map, Map::Cell* start, Map::Cell* goal)
 
 	_rhs(_goal, 0.0);
 
-	_list_insert(_goal, _k(_goal));
+	_list_insert(_goal, pair<double,double>(_h(_start, _goal), 0));
 }
 
 /**
@@ -99,7 +99,7 @@ bool Planner::replan()
 	// Follow the path with the least cost until goal is reached
 	while (current != _goal)
 	{
-		if (current == NULL || Math::equals(_g(current), Math::INFINITY))
+		if (current == NULL || _g(current) == Math::INFINITY)
 			return false;
 
 		current = _min_succ(current).first;
@@ -150,24 +150,30 @@ void Planner::update(Map::Cell* u, double cost)
 
 	Map::Cell** nbrs = u->nbrs();
 
+	double tmp_cost_old, tmp_cost_new;
+	double tmp_rhs, tmp_g;
+
 	// Update u
 	for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
 	{
 		if (nbrs[i] != NULL)
 		{
 			u->cost = cost_old;
-			double tmp_cost_old = _cost(u, nbrs[i]);
+			tmp_cost_old = _cost(u, nbrs[i]);
 			u->cost = cost_new;
-			double tmp_cost_new = _cost(u, nbrs[i]);
+			tmp_cost_new = _cost(u, nbrs[i]);
 
-			if ( ! (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(tmp_cost_new, Math::INFINITY)) && Math::greater(tmp_cost_old, tmp_cost_new))
+			tmp_rhs = _rhs(u);
+			tmp_g = _g(nbrs[i]);
+
+			if (tmp_cost_old > tmp_cost_new)
 			{
 				if (u != _goal)
 				{
-					_rhs(u, min(_rhs(u), (tmp_cost_new + _g(nbrs[i]))));
+					_rhs(u, min(tmp_rhs, (tmp_cost_new + tmp_g)));
 				}
 			}
-			else if ((Math::equals(_rhs(u), Math::INFINITY) && (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(_g(nbrs[i]), Math::INFINITY))) || Math::equals(_rhs(u), (tmp_cost_old + _g(nbrs[i]))))
+			else if (tmp_rhs == (tmp_cost_old + tmp_g))
 			{
 				if (u != _goal)
 				{
@@ -185,18 +191,21 @@ void Planner::update(Map::Cell* u, double cost)
 		if (nbrs[i] != NULL)
 		{
 			u->cost = cost_old;
-			double tmp_cost_old = _cost(u, nbrs[i]);
+			tmp_cost_old = _cost(u, nbrs[i]);
 			u->cost = cost_new;
-			double tmp_cost_new = _cost(u, nbrs[i]);
+			tmp_cost_new = _cost(u, nbrs[i]);
 
-			if ( ! (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(tmp_cost_new, Math::INFINITY)) && Math::greater(tmp_cost_old, tmp_cost_new))
+			tmp_rhs = _rhs(nbrs[i]);
+			tmp_g = _g(u);
+
+			if (tmp_cost_old > tmp_cost_new)
 			{
 				if (nbrs[i] != _goal)
 				{
-					_rhs(nbrs[i], min(_rhs(nbrs[i]), (tmp_cost_new + _g(u))));
+					_rhs(nbrs[i], min(tmp_rhs, (tmp_cost_new + tmp_g)));
 				}
 			}
-			else if ((Math::equals(_rhs(nbrs[i]), Math::INFINITY) && (Math::equals(tmp_cost_old, Math::INFINITY) || Math::equals(_g(u), Math::INFINITY))) || Math::equals(_rhs(nbrs[i]), (tmp_cost_old + _g(u))))
+			else if (tmp_rhs == (tmp_cost_old + tmp_g))
 			{
 				if (nbrs[i] != _goal)
 				{
@@ -236,13 +245,14 @@ bool Planner::_compute()
 
 	KeyCompare key_compare;
 
-	Map::Cell* u;
-	Map::Cell** nbrs;
+	int attempts = 0;
 
+	Map::Cell* u;
 	pair<double,double> k_old;
 	pair<double,double> k_new;
-
-	int attempts = 0;
+	Map::Cell** nbrs;
+	double g_old;
+	double tmp_g, tmp_rhs;
 
 	while ( ! _open_list.empty() && key_compare(_open_list.begin()->first, _k(_start)) || ! Math::equals(_rhs(_start), _g(_start)))
 	{
@@ -253,14 +263,18 @@ bool Planner::_compute()
 		u = _open_list.begin()->second;
 		k_old = _open_list.begin()->first;
 		k_new = _k(u);
+
+		tmp_rhs = _rhs(u);
+		tmp_g = _g(u);
 		
 		if (key_compare(k_old, k_new))
 		{
 			_list_update(u, k_new);
 		}
-		else if (Math::greater(_g(u), _rhs(u)))
+		else if (tmp_g > tmp_rhs)
 		{
-			_g(u, _rhs(u));
+			_g(u, tmp_rhs);
+			tmp_g = tmp_rhs;
 
 			_list_remove(u);
 
@@ -272,7 +286,7 @@ bool Planner::_compute()
 				{
 					if (nbrs[i] != _goal)
 					{
-						_rhs(nbrs[i], min(_rhs(nbrs[i]), _cost(nbrs[i], u) + _g(u)));
+						_rhs(nbrs[i], min(_rhs(nbrs[i]), _cost(nbrs[i], u) + tmp_g));
 					}
 
 					_update(nbrs[i]);
@@ -281,7 +295,7 @@ bool Planner::_compute()
 		}
 		else
 		{
-			double g_old = _g(u);
+			g_old = tmp_g;
 			_g(u, Math::INFINITY);
 
 			// Perform action for u
@@ -299,7 +313,7 @@ bool Planner::_compute()
 			{
 				if (nbrs[i] != NULL)
 				{
-					if (Math::equals(_rhs(nbrs[i]), (_cost(nbrs[i], u) + g_old)))
+					if (_rhs(nbrs[i]) == (_cost(nbrs[i], u) + g_old))
 					{
 						if (nbrs[i] != _goal)
 						{
@@ -392,7 +406,7 @@ pair<double,double> Planner::_k(Map::Cell* u)
 {
 	double g = _g(u);
 	double rhs = _rhs(u);
-	double min = Math::less(g, rhs) ? g : rhs;
+	double min = (g < rhs) ? g : rhs;
 	return pair<double,double>((min + _h(_start, u) + _km), min);
 }
 
@@ -468,12 +482,12 @@ pair<Map::Cell*,double> Planner::_min_succ(Map::Cell* u)
 			tmp_cost = _cost(u, nbrs[i]);
 			tmp_g = _g(nbrs[i]);
 
-			if (Math::equals(tmp_cost, Math::INFINITY) || Math::equals(tmp_g, Math::INFINITY))
+			if (tmp_cost == Math::INFINITY || tmp_g == Math::INFINITY)
 				continue;
 			
 			tmp_cost += tmp_g;
 
-			if (Math::less(tmp_cost, min_cost))
+			if (tmp_cost < min_cost)
 			{
 				min_cell = nbrs[i];
 				min_cost = tmp_cost;
@@ -515,7 +529,7 @@ double Planner::_rhs(Map::Cell* u, double value)
  */
 void Planner::_update(Map::Cell* u)
 {
-	bool diff = ! Math::equals(_g(u), _rhs(u));
+	bool diff = _g(u) != _rhs(u);
 	bool exists = (_open_hash.find(u) != _open_hash.end());
 
 	if (diff && exists)
