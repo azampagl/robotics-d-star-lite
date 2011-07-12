@@ -6,9 +6,17 @@ D* Lite (D Star Lite)
 > ### Wikipedia
 
 
-Structure
+Requirements
 ---------------------
 
+If you plan on building the code, you will need the following
+
++ VC++ or GCC
++ FLTK 1.3
+
+
+Structure
+---------------------
 
 
      bin/
@@ -26,7 +34,6 @@ Contains the source files of the project.  The actual implementation of the D\* 
 
 Usage
 ---------------------
-
 
 
 ![alt text](https://github.com/azampagl/robotics-d-star-lite/raw/basic/img/screenshot.jpg "Screenshot")
@@ -52,7 +59,6 @@ To run the program, the following arguments must be passed via command line.
 
 References
 ---------------------
-
 
 
 *Koenig, S and Likhachev, M. Improved Fast Replanning for Robot Navigation in Unknown Terrain. Atlanta : Georgia Institute of Technology, 2002.*
