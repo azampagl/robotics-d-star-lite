@@ -93,10 +93,6 @@ bool Planner::replan()
 	if ( ! result)
 	  return false;
 
-	Map::Cell** nbrs = NULL;
-	Map::Cell* min_cell = NULL;
-	double min_cost, tmp_cost, tmp_g = Math::INFINITY;
-
 	Map::Cell* current = _start;
 	_path.push_back(current);
 
@@ -106,7 +102,7 @@ bool Planner::replan()
 		if (current == NULL || Math::equals(_g(current), Math::INFINITY))
 			return false;
 
-		current = _min_succ(current);
+		current = _min_succ(current).first;
 
 		_path.push_back(current);
 	}
@@ -151,7 +147,55 @@ void Planner::update(Map::Cell* u, double cost)
 	double cost_old = u->cost;
 	u->cost = cost;
 
+	Map::Cell** nbrs = u->nbrs();
+
+	// Update u
+	for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+	{
+		if (nbrs[i] != NULL)
+		{
+			if (Math::greater(cost_old, u->cost))
+			{
+				if (u != _goal)
+				{
+					_rhs(u, min(_rhs(u), (_cost(u, nbrs[i]) + _g(nbrs[i]))));
+				}
+			}
+			else if (Math::equals(_rhs(u), (cost_old + _g(nbrs[i]))))
+			{
+				if (u != _goal)
+				{
+					_rhs(u, _min_succ(u).second);
+				}
+			}
+		}
+	}
+
 	_update(u);
+
+	// Update neighbors
+	for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
+	{
+		if (nbrs[i] != NULL)
+		{
+			if (Math::greater(cost_old, u->cost))
+			{
+				if (nbrs[i] != _goal)
+				{
+					_rhs(nbrs[i], min(_rhs(nbrs[i]), (_cost(nbrs[i], u) + _g(u))));
+				}
+			}
+			else if (Math::equals(_rhs(nbrs[i]), (cost_old + _g(u))))
+			{
+				if (nbrs[i] != _goal)
+				{
+					_rhs(nbrs[i], _min_succ(nbrs[i]).second);
+				}
+			}
+
+			_update(nbrs[i]);
+		}
+	}
 }
 
 /**
@@ -229,45 +273,29 @@ bool Planner::_compute()
 			double g_old = _g(u);
 			_g(u, Math::INFINITY);
 
-			nbrs = u->nbrs();
-
-			double min_cost, tmp_cost, tmp_g;
-			min_cost = tmp_cost = tmp_g = Math::INFINITY;
-
+			// Perform action for u
 			if (u != _goal)
 			{
-				tmp_g = _g(u);
-
-				if (Math::equals(tmp_g, Math::INFINITY))
-					break;
-
-				for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
-				{
-					if (nbrs[i] != NULL)
-					{
-						tmp_cost = _cost(u, nbrs[i]);
-
-						if (Math::equals(tmp_cost, Math::INFINITY))
-							continue;
-
-						tmp_cost += tmp_g;
-
-						if (Math::less(tmp_cost, min_cost))
-						{
-							min_cost = tmp_cost;
-						}
-					}
-				}
-
-				_rhs(u, min);
+				_rhs(u, _min_succ(u).second);
 			}
 
 			_update(u);
 
+			nbrs = u->nbrs();
+
+			// Perform action for neighbors
 			for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
 			{
 				if (nbrs[i] != NULL)
 				{
+					if (Math::equals(_rhs(nbrs[i]), (_cost(nbrs[i], u) + g_old)))
+					{
+						if (nbrs[i] != _goal)
+						{
+							_rhs(nbrs[i], _min_succ(nbrs[i]).second);
+						}
+					}
+
 					_update(nbrs[i]);
 				}
 			}
@@ -330,12 +358,12 @@ double Planner::_g(Map::Cell* u, double value)
  */
 double Planner::_h(Map::Cell* a, Map::Cell* b)
 {
-	double min = labs(a->x() - b->x());
-	double max = labs(a->y() - b->y());
+	unsigned int min = labs(a->x() - b->x());
+	unsigned int max = labs(a->y() - b->y());
 	
 	if (min > max)
 	{
-		double tmp = min;
+		unsigned int tmp = min;
 		min = max;
 		max = tmp;
 	}
@@ -410,10 +438,10 @@ void Planner::_list_update(Map::Cell* u, pair<double,double> k)
 /**
  * Finds the minimum successor cell.
  *
- * @param   Map::Cell*   root
- * @return  Map::Cell*   successor
+ * @param   Map::Cell*            root
+ * @return  <Map::Cell*,double>   successor
  */
-Map::Cell* Planner::_min_succ(Map::Cell* u)
+pair<Map::Cell*,double> Planner::_min_succ(Map::Cell* u)
 {
 	Map::Cell** nbrs = u->nbrs();
 
@@ -436,13 +464,13 @@ Map::Cell* Planner::_min_succ(Map::Cell* u)
 
 			if (Math::less(tmp_cost, min_cost))
 			{
-				min_cost = tmp_cost;
 				min_cell = nbrs[i];
+				min_cost = tmp_cost;
 			}
 		}
 	}
 
-	return min_cell;
+	return pair<Map::Cell*,double>(min_cell, min_cost);
 }
 
 /**

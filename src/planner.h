@@ -217,10 +217,10 @@ namespace DStarLite
 			/**
 			 * Finds the minimum successor cell.
 			 *
-			 * @param   Map::Cell*   root
-			 * @return  Map::Cell*   successor
+			 * @param   Map::Cell*                root
+			 * @return  pair<Map::Cell*,double>   successor
 			 */
-			Map::Cell* _min_succ(Map::Cell* u);
+			pair<Map::Cell*,double> _min_succ(Map::Cell* u);
 
 			/**
 			 * Gets/Sets rhs value for a cell.
