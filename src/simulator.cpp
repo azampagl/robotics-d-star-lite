@@ -314,8 +314,8 @@ bool Simulator::update_map()
 	unsigned int max_x, max_y, min_x, min_y;
 	max_x = (x + radius < cols) ? x + radius : cols;
 	max_y = (y + radius < rows) ? y + radius : rows;
-	min_x = (x - radius > 0) ? x - radius : 0;
-	min_y = (y - radius > 0) ? y - radius : 0;
+	min_x = (x > radius) ? x - radius : 0;
+	min_y = (y > radius) ? y - radius : 0;
 
 	for (unsigned int i = min_y; i < max_y; i++)
 	{
