@@ -29,7 +29,7 @@ Contains the project files for Visual Studio 2010 (Windows) and Eclipse (Linux).
 
      src/
 
-Contains the source files of the project.  The actual implementation of the D\* Lite algorithm can be found in **planner.h** and **planner.cpp**.
+Contains the source files of the project.  The actual implementation of the D\* Lite algorithm can be found in **planner.h** and **planner.cpp** (based on "Improved Fast Replanning for Robot Navigation in Unknown Terrain" by Sven Koenig and Maxim Likhachev - Figure 5: D* Lite: Final Version).
 
 
 Usage
