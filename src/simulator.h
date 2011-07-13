@@ -13,6 +13,7 @@
 #include <FL/FL_BMP_Image.H>
 #include <FL/FL_Button.H>
 #include <FL/Fl_Double_Window.H>
+#include <FL/fl_ask.H>
 
 #include "planner.h"
 #include "map.h"

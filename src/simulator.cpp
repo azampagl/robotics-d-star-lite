@@ -83,7 +83,10 @@ Simulator::Simulator(char* name, Config config)
 
 	// Make sure the real image and the robot's image are the same dimensions
 	if (img_width != robot_bitmap.w() || img_height != robot_bitmap.h() || img_depth != robot_bitmap.d())
+	{
+		fl_alert("Invalid Files or Bitmaps Are Different Sizes!");
 		throw;
+	}
 
 	// Button width and height
 	int button_width = 100;
@@ -222,6 +225,7 @@ int Simulator::execute()
 {
 	if (_planner->start() == _planner->goal())
 	{
+		fl_alert("Goal Reached!");
 		_real_widget->current = _robot_widget->current = _planner->goal();
 		return 1;
 	}
@@ -231,7 +235,10 @@ int Simulator::execute()
 	{
 		// Replan the path
 		if ( ! _planner->replan())
-			return -1;
+		{
+			fl_alert("No Solution Found!");
+			throw;
+		}
 
 		_robot_widget->path_planned = _planner->path();
 
@@ -262,7 +269,12 @@ bool Simulator::init()
 
 	_init = true;
 
-	_planner->replan();
+	if ( ! _planner->replan())
+	{
+		fl_alert("No Solution Found!");
+		throw;
+	}
+
 	_robot_widget->path_planned = _planner->path();
 
 	return false;
@@ -305,8 +317,8 @@ bool Simulator::update_map()
 	unsigned int max_x, max_y, min_x, min_y;
 	max_x = (x + radius < cols) ? x + radius : cols;
 	max_y = (y + radius < rows) ? y + radius : rows;
-	min_x = (x - radius > 0) ? x - radius : 0;
-	min_y = (y - radius > 0) ? y - radius : 0;
+	min_x = (x > radius) ? x - radius : 0;
+	min_y = (y > radius) ? y - radius : 0;
 
 	for (unsigned int i = min_y; i < max_y; i++)
 	{
