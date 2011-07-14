@@ -11,9 +11,9 @@
 using namespace DStarLite;
 
 /**
- * @var  double  INFINITY
+ * @var  double  INF
  */
-const double Math::INFINITY = DBL_MAX;
+const double Math::INF = DBL_MAX;
 
 /**
  * @var  double  PI
@@ -59,7 +59,7 @@ double Math::deg2signed(double degrees)
  */
 bool Math::equals(double a, double b, double precision)
 {
-	if (a == Math::INFINITY && b == Math::INFINITY)
+	if (a == Math::INF && b == Math::INF)
 		return true;
 	
 	return (fabs(a - b) < precision);
@@ -76,7 +76,7 @@ bool Math::equals(double a, double b, double precision)
  */
 bool Math::greater(double a, double b, double precision)
 {
-	if (a == Math::INFINITY && b == Math::INFINITY)
+	if (a == Math::INF && b == Math::INF)
 		return false;
 	
 	return a - precision > b;
@@ -93,7 +93,7 @@ bool Math::greater(double a, double b, double precision)
  */
 bool Math::less(double a, double b, double precision)
 {
-	if (a == Math::INFINITY && b == Math::INFINITY)
+	if (a == Math::INF && b == Math::INF)
 		return false;
 	
 	return a + precision < b;

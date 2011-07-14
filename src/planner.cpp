@@ -99,7 +99,7 @@ bool Planner::replan()
 	// Follow the path with the least cost until goal is reached
 	while (current != _goal)
 	{
-		if (current == NULL || _g(current) == Math::INFINITY)
+		if (current == NULL || _g(current) == Math::INF)
 			return false;
 
 		current = _min_succ(current).first;
@@ -229,7 +229,7 @@ void Planner::_cell(Map::Cell* u)
 	if (_cell_hash.find(u) != _cell_hash.end())
 		return;
 	
-	double h = Math::INFINITY;
+	double h = Math::INF;
 	_cell_hash[u] = pair<double,double>(h, h);
 }
 
@@ -296,7 +296,7 @@ bool Planner::_compute()
 		else
 		{
 			g_old = tmp_g;
-			_g(u, Math::INFINITY);
+			_g(u, Math::INF);
 
 			// Perform action for u
 			if (u != _goal)
@@ -473,7 +473,7 @@ pair<Map::Cell*,double> Planner::_min_succ(Map::Cell* u)
 	double tmp_cost, tmp_g;
 	
 	Map::Cell* min_cell = NULL;
-	double min_cost = Math::INFINITY;
+	double min_cost = Math::INF;
 
 	for (unsigned int i = 0; i < Map::Cell::NUM_NBRS; i++)
 	{
@@ -482,7 +482,7 @@ pair<Map::Cell*,double> Planner::_min_succ(Map::Cell* u)
 			tmp_cost = _cost(u, nbrs[i]);
 			tmp_g = _g(nbrs[i]);
 
-			if (tmp_cost == Math::INFINITY || tmp_g == Math::INFINITY)
+			if (tmp_cost == Math::INF || tmp_g == Math::INF)
 				continue;
 			
 			tmp_cost += tmp_g;
