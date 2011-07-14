@@ -16,7 +16,11 @@
 
 #include <list>
 #include <map>
-#include <unordered_map>
+#ifdef WIN32
+	#include <unordered_map>
+#else
+	#include <tr1/unordered_map>
+#endif
 #include "map.h"
 #include "math.h"
 
