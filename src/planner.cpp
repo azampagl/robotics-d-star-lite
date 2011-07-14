@@ -254,7 +254,7 @@ bool Planner::_compute()
 	double g_old;
 	double tmp_g, tmp_rhs;
 
-	while ( ! _open_list.empty() && _open_list.begin()->first < _k(_start) || ! Math::equals(_rhs(_start), _g(_start)))
+	while ((! _open_list.empty() && _open_list.begin()->first < _k(_start)) || ! Math::equals(_rhs(_start), _g(_start)))
 	{
 		// Reached max steps, quit
 		if (++attempts > Planner::MAX_STEPS)
