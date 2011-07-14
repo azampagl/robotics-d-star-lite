@@ -15,7 +15,10 @@ int main(int argc, char **argv)
 {
 	// Make sure we have the minimum number of arguments
 	if (argc != 9)
+	{
+		printf("Invalid Number of Arguments: %d", argc);
 		throw;
+	}
 
 	Simulator::Config config = Simulator::Config();
 
