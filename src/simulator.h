@@ -10,8 +10,8 @@
 #define DSTARLITE_SIMULATOR_H
 
 #include <FL/Fl.H>
-#include <FL/FL_BMP_Image.H>
-#include <FL/FL_Button.H>
+#include <FL/Fl_BMP_Image.H>
+#include <FL/Fl_Button.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/fl_ask.H>
 

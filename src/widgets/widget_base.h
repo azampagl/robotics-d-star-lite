@@ -12,9 +12,8 @@
 #include <list>
 
 #include <FL/Fl.H>
-#include <FL/FL_Widget.H>
-#include <FL/FL_BMP_Image.H>
-#include <FL/FL_Widget.H>
+#include <FL/Fl_BMP_Image.H>
+#include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
 
 #include "../map.h"
