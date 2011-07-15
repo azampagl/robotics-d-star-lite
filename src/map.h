@@ -10,6 +10,7 @@
 #define DSTARLITE_MAP_H
 
 #include <functional>
+#include <stdlib.h>
 
 using namespace std;
 

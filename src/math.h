@@ -21,7 +21,7 @@ namespace DStarLite
 			/**
 			 * @var  double  INFINITY
 			 */
-			static const double INFINITY;
+			static const double INF;
 
 			/**
 			 * @var  double  PI
