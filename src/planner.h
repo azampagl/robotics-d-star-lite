@@ -33,6 +33,14 @@ namespace DStarLite
 	{
 		public:
 
+			/**
+			 * Key compare struct.
+			 */
+			struct KeyCompare : public binary_function<pair<double,double>, pair<double,double>, bool>
+			{
+				bool operator()(const pair<double,double>& p1, const pair<double,double>& p2) const;
+			};
+
 			/*
 			 * @var  static const double  max steps before assuming no solution possible
 			 */
@@ -118,7 +126,7 @@ namespace DStarLite
 			 * @var  multimap  open list
 			 */
 			typedef pair<pair<double,double>, Map::Cell*> OL_PAIR;
-			typedef multimap<pair<double,double>, Map::Cell*> OL;
+			typedef multimap<pair<double,double>, Map::Cell*, KeyCompare> OL;
 			OL _open_list;
 
 			/**

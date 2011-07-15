@@ -166,14 +166,14 @@ void Planner::update(Map::Cell* u, double cost)
 			tmp_rhs = _rhs(u);
 			tmp_g = _g(nbrs[i]);
 
-			if (tmp_cost_old > tmp_cost_new)
+			if (Math::greater(tmp_cost_old, tmp_cost_new))
 			{
 				if (u != _goal)
 				{
 					_rhs(u, min(tmp_rhs, (tmp_cost_new + tmp_g)));
 				}
 			}
-			else if (tmp_rhs == (tmp_cost_old + tmp_g))
+			else if (Math::equals(tmp_rhs, (tmp_cost_old + tmp_g)))
 			{
 				if (u != _goal)
 				{
@@ -198,14 +198,14 @@ void Planner::update(Map::Cell* u, double cost)
 			tmp_rhs = _rhs(nbrs[i]);
 			tmp_g = _g(u);
 
-			if (tmp_cost_old > tmp_cost_new)
+			if (Math::greater(tmp_cost_old, tmp_cost_new))
 			{
 				if (nbrs[i] != _goal)
 				{
 					_rhs(nbrs[i], min(tmp_rhs, (tmp_cost_new + tmp_g)));
 				}
 			}
-			else if (tmp_rhs == (tmp_cost_old + tmp_g))
+			else if (Math::equals(tmp_rhs, (tmp_cost_old + tmp_g)))
 			{
 				if (nbrs[i] != _goal)
 				{
@@ -243,7 +243,7 @@ bool Planner::_compute()
 	if (_open_list.empty())
 		return false;
 
-	//KeyCompare key_compare;
+	KeyCompare key_compare;
 
 	int attempts = 0;
 
@@ -254,7 +254,7 @@ bool Planner::_compute()
 	double g_old;
 	double tmp_g, tmp_rhs;
 
-	while ((! _open_list.empty() && _open_list.begin()->first < _k(_start)) || ! Math::equals(_rhs(_start), _g(_start)))
+	while (( ! _open_list.empty() && key_compare(_open_list.begin()->first, _k(_start))) || ! Math::equals(_rhs(_start), _g(_start)))
 	{
 		// Reached max steps, quit
 		if (++attempts > Planner::MAX_STEPS)
@@ -267,11 +267,11 @@ bool Planner::_compute()
 		tmp_rhs = _rhs(u);
 		tmp_g = _g(u);
 		
-		if (k_old < k_new)
+		if (key_compare(k_old, k_new))
 		{
 			_list_update(u, k_new);
 		}
-		else if (tmp_g > tmp_rhs)
+		else if (Math::greater(tmp_g, tmp_rhs))
 		{
 			_g(u, tmp_rhs);
 			tmp_g = tmp_rhs;
@@ -313,7 +313,7 @@ bool Planner::_compute()
 			{
 				if (nbrs[i] != NULL)
 				{
-					if (_rhs(nbrs[i]) == (_cost(nbrs[i], u) + g_old))
+					if (Math::equals(_rhs(nbrs[i]), (_cost(nbrs[i], u) + g_old)))
 					{
 						if (nbrs[i] != _goal)
 						{
@@ -544,4 +544,16 @@ void Planner::_update(Map::Cell* u)
 	{
 		_list_remove(u);
 	}
+}
+
+/**
+ * Key compare function.
+ */
+bool Planner::KeyCompare::operator()(const pair<double,double>& p1, const pair<double,double>& p2) const
+{
+	if (Math::less(p1.first, p2.first))				return true;
+	else if (Math::greater(p1.first, p2.first))		return false;
+	else if (Math::less(p1.second,  p2.second))		return true;
+	else if (Math::greater(p1.second, p2.second))	return false;
+													return false;
 }
